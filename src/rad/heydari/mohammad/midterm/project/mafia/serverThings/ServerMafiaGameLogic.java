@@ -1,20 +1,21 @@
 package rad.heydari.mohammad.midterm.project.mafia.serverThings;
 
 import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.RepetitiousUserNameException;
-import rad.heydari.mohammad.midterm.project.mafia.Runnables.ServerSideRunnables.RunnableServerSideMessageReceiver;
-import rad.heydari.mohammad.midterm.project.mafia.Runnables.ServerSideRunnables.RunnableUserNameTaker;
-import rad.heydari.mohammad.midterm.project.mafia.Runnables.ServerSideRunnables.RunnableVoteHandler;
-import rad.heydari.mohammad.midterm.project.mafia.Runnables.ServerSideRunnables.RunnableWaitToGetReady;
+import rad.heydari.mohammad.midterm.project.mafia.Runnables.ServerSideRunnables.*;
 import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.CommandTypes;
-import rad.heydari.mohammad.midterm.project.mafia.commandThings.Demand;
 import rad.heydari.mohammad.midterm.project.mafia.gameThings.ServerSideGame;
+import rad.heydari.mohammad.midterm.project.mafia.night.NightAction;
+import rad.heydari.mohammad.midterm.project.mafia.night.NightActionTypes;
+import rad.heydari.mohammad.midterm.project.mafia.night.NightEvents;
+import rad.heydari.mohammad.midterm.project.mafia.roleThings.Role;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.RoleNames;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -23,16 +24,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ServerMafiaGameLogic implements ServerSideGame {
-    private ArrayList<ServerSidePlayerDetails> onlinePlayers;
+    private ArrayList<ServerSidePlayerDetails> alivePlayers;
     private ArrayList<ServerSidePlayerDetails> spectators;
     private ArrayList<ServerSidePlayerDetails> offlineDeadOnes;
     private VotingBox votingBox;
+    private NightEvents nightEvents;
+    private boolean toughGuyIsHurt;
 
-    public ServerMafiaGameLogic(ArrayList<ServerSidePlayerDetails> onlinePlayers){
+    public ServerMafiaGameLogic(ArrayList<ServerSidePlayerDetails> alivePlayers){
         this.spectators = new ArrayList<>();
         this.offlineDeadOnes = new ArrayList<>();
-        this.onlinePlayers = onlinePlayers;
+        this.alivePlayers = alivePlayers;
         this.votingBox = new VotingBox();
+        this.nightEvents = new NightEvents();
     }
     @Override
     public void startTheGame(){
@@ -86,7 +90,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         ServerSidePlayerDetails player = null;
 
-        Iterator<ServerSidePlayerDetails> playerIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
 
         while (playerIterator.hasNext()){
             player = playerIterator.next();
@@ -105,7 +109,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         shuffleThePlayers();
 
-        Iterator<ServerSidePlayerDetails> playerIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
         int counter = 1;
         while (playerIterator.hasNext()){
 
@@ -225,12 +229,12 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         ArrayList<ServerSidePlayerDetails> shuffledPlayers = new ArrayList<>();
         Random random = new Random();
         int randomNumber = 0;
-        while (onlinePlayers.size() > 0){
-            randomNumber = random.nextInt(onlinePlayers.size());
-            shuffledPlayers.add(onlinePlayers.get(randomNumber));
-            onlinePlayers.remove(randomNumber);
+        while (alivePlayers.size() > 0){
+            randomNumber = random.nextInt(alivePlayers.size());
+            shuffledPlayers.add(alivePlayers.get(randomNumber));
+            alivePlayers.remove(randomNumber);
         }
-        onlinePlayers = shuffledPlayers;
+        alivePlayers = shuffledPlayers;
 
     }
 
@@ -250,14 +254,47 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             notifyOthersThisVote(vote);
         }
 
+        else if(command.getType() == CommandTypes.iDoMyAction){
+
+            NightAction nightAction =(NightAction) command.getCommandNeededThings();
+            if(nightAction.getNightActionType() == NightActionTypes.mafiaVictim){
+                if(nightAction.getNameOfThePlayerActionHappensTo() != null){
+                    synchronized (nightEvents){
+                        nightEvents.mafiaTakesVictim(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()),
+                                false);
+                    }
+                }
+            }
+
+            else if(nightAction.getNightActionType() == NightActionTypes.godFatherVictim){
+                synchronized (nightEvents){
+                    nightEvents.mafiaTakesVictim(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()),
+                            true);
+                }
+            }
+
+            else if(nightAction.getNightActionType() == NightActionTypes.save){
+                if(nightAction.getNameOfThePlayerActionHappensTo() != null){
+                    synchronized (nightEvents){
+                        nightEvents.save(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()));
+                    }
+                }
+            }
+
+            else if(nightAction.getNightActionType() == NightActionTypes.toughGuySaysShowDeadRoles){
+                synchronized (nightEvents){
+                    nightEvents.toughGuySaysShowDeadRoles();
+                }
+            }
+
+            else if(nightAction.getNightActionType() == NightActionTypes.detect){
+                synchronized (nightEvents){
+                    nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()));
+                }
+            }
+
+        }
         // other things :
-
-    }
-
-    private synchronized void doTheDemand(Demand demand){
-        Command command = demand.getCommand();
-        ServerSidePlayerDetails demander = demand.getDemander();
-
     }
 
     private void notifyOthersThisVote(Vote vote){
@@ -278,12 +315,16 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private  boolean isUserNameRepetitious(String userName){
-
-        for(ServerSidePlayerDetails serverSidePlayerDetails : onlinePlayers){
+        Iterator<ServerSidePlayerDetails> serverSidePlayerDetailsIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails serverSidePlayerDetails = null;
+        while (serverSidePlayerDetailsIterator.hasNext()){
+            serverSidePlayerDetails = serverSidePlayerDetailsIterator.next();
             if(userName.equals(serverSidePlayerDetails.getUserName())){
                 return true;
             }
         }
+
+
 
         return false;
     }
@@ -312,11 +353,14 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         String mafiaIntroduction = getMafiaIntroduction();
         Command mafiaIntroductionCommand = new Command(CommandTypes.serverToClientString, mafiaIntroduction);
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails serverSidePlayerDetails = null;
+        while (playerDetailsIterator.hasNext()){
 
-        for(ServerSidePlayerDetails serverSidePlayerDetails : onlinePlayers){
+            serverSidePlayerDetails = playerDetailsIterator.next();
             if(serverSidePlayerDetails.getRoleName() == RoleNames.mafia ||
-                serverSidePlayerDetails.getRoleName() == RoleNames.doctorLector ||
-                serverSidePlayerDetails.getRoleName() == RoleNames.godFather){
+                    serverSidePlayerDetails.getRoleName() == RoleNames.doctorLector ||
+                    serverSidePlayerDetails.getRoleName() == RoleNames.godFather){
 
                 try {
                     serverSidePlayerDetails.sendCommandToPlayer(mafiaIntroductionCommand);
@@ -324,22 +368,26 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                     e.printStackTrace();
                 }
             }
+
         }
+
+
 
     }
 
     private void townDoctorAndMayorIntroduction(){
-        String mayorToDoctorIntroduction;
-        ServerSidePlayerDetails doctor = findSpecificRolePlayer(RoleNames.townDoctor);
-        ServerSidePlayerDetails mayor = findSpecificRolePlayer(RoleNames.mayor);
 
-        if(doctor != null){
-            try {
-                doctor.sendCommandToPlayer(new Command(CommandTypes.serverToClientString , getMayorToDoctorIntroduction()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        String mayorToDoctorIntroduction;
+//        ServerSidePlayerDetails doctor = findSpecificAliveRolePlayer(RoleNames.townDoctor);
+        ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
+
+//        if(doctor != null){
+//            try {
+//                doctor.sendCommandToPlayer(new Command(CommandTypes.serverToClientString , getMayorToDoctorIntroduction()));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         if(mayor != null){
             try {
@@ -354,8 +402,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     private String  getMafiaIntroduction(){
         String mafiaIntroduction = "the list of mafias : \nthe godfather : " ;
 
-        if(findSpecificRolePlayer(RoleNames.godFather) != null){
-            mafiaIntroduction += findSpecificRolePlayer(RoleNames.godFather).getUserName() + "\n";
+        if(findSpecificAliveRolePlayer(RoleNames.godFather) != null){
+            mafiaIntroduction += findSpecificAliveRolePlayer(RoleNames.godFather).getUserName() + "\n";
         }
         else {
             mafiaIntroduction += "no one\n";
@@ -363,8 +411,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         mafiaIntroduction += "doctor lector : ";
 
-        if(findSpecificRolePlayer(RoleNames.doctorLector) != null){
-            mafiaIntroduction += findSpecificRolePlayer(RoleNames.doctorLector).getUserName() + "\n";
+        if(findSpecificAliveRolePlayer(RoleNames.doctorLector) != null){
+            mafiaIntroduction += findSpecificAliveRolePlayer(RoleNames.doctorLector).getUserName() + "\n";
         }
         else{
             mafiaIntroduction += "no one\n";
@@ -375,20 +423,22 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             mafiaIntroduction += "no one";
         }
         else {
-            for (ServerSidePlayerDetails serverSidePlayerDetails : findSameRolesPlayers(RoleNames.mafia)){
-
-                mafiaIntroduction += serverSidePlayerDetails.getUserName() + "\n";
+            Iterator<ServerSidePlayerDetails> playerDetailsIterator = findSameRolesPlayers(RoleNames.mafia).iterator();
+            ServerSidePlayerDetails player = null;
+            while (playerDetailsIterator.hasNext()){
+                player = playerDetailsIterator.next();
+                mafiaIntroduction += player.getUserName() + "\n";
             }
         }
-
         return mafiaIntroduction;
     }
 
-    private ServerSidePlayerDetails findSpecificRolePlayer(RoleNames roleName){
-        Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
+    private ServerSidePlayerDetails findSpecificAliveRolePlayer(RoleNames roleName){
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
 
         while (iterator.hasNext()){
             ServerSidePlayerDetails player = iterator.next();
+
             if(player.getRoleName() == roleName){
                 return player;
             }
@@ -396,8 +446,35 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return null;
     }
 
+    private ServerSidePlayerDetails findSpecificRolePlayerNoMatterOnOrOff(RoleNames roleName){
+        if(findSpecificAliveRolePlayer(roleName) != null){
+            return findSpecificAliveRolePlayer(roleName);
+        }
+        else {
+            Iterator<ServerSidePlayerDetails> playerDetailsIterator = spectators.iterator();
+            ServerSidePlayerDetails serverSidePlayerDetails = null;
+            while (playerDetailsIterator.hasNext()){
+                serverSidePlayerDetails = playerDetailsIterator.next();
+                if(serverSidePlayerDetails.getRoleName() == roleName){
+                    return serverSidePlayerDetails;
+                }
+            }
+
+            playerDetailsIterator = offlineDeadOnes.iterator();
+            while (playerDetailsIterator.hasNext()){
+                serverSidePlayerDetails = playerDetailsIterator.next();
+                if(serverSidePlayerDetails.getRoleName() == roleName){
+                    return serverSidePlayerDetails;
+                }
+            }
+        }
+
+        return null;
+
+    }
+
     private ArrayList<ServerSidePlayerDetails> findSameRolesPlayers(RoleNames roleName){
-        Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
 
         ArrayList<ServerSidePlayerDetails> sameRolePlayers = new ArrayList<>();
         while (iterator.hasNext()){
@@ -413,7 +490,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private String getMayorToDoctorIntroduction(){
         String mayorToDoctorIntroduction = "the mayor is : ";
-        ServerSidePlayerDetails mayor = findSpecificRolePlayer(RoleNames.mayor);
+        ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
         if(mayor == null){
             mayorToDoctorIntroduction += "no one";
         }
@@ -425,7 +502,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private String getDoctorToMayorIntroduction(){
         String doctorToMayorIntroduction = "the doctor is : ";
-        ServerSidePlayerDetails doctor = findSpecificRolePlayer(RoleNames.townDoctor);
+        ServerSidePlayerDetails doctor = findSpecificAliveRolePlayer(RoleNames.townDoctor);
 
         if(doctor == null){
                 doctorToMayorIntroduction += "no one";
@@ -442,15 +519,15 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         notifyOthersThePlayerGotOffline(removingPlayer);
 
 
-        if(onlinePlayers.contains(removingPlayer)){
+        if(alivePlayers.contains(removingPlayer)){
             offlineDeadOnes.add(removingPlayer);
-            onlinePlayers.remove(removingPlayer);
+            alivePlayers.remove(removingPlayer);
         }
     }
 
     private void notifyOthersThePlayerGotOffline(ServerSidePlayerDetails offlinePlayer){
 
-        Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
 
         while (iterator.hasNext()){
             ServerSidePlayerDetails messageReceiver = iterator.next();
@@ -475,7 +552,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private int getBadGuysNumber(){
-        Iterator<ServerSidePlayerDetails> playerDetailsIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         RoleNames playerRoleName = null;
         int badGuysNumber = 0;
         while (playerDetailsIterator.hasNext()){
@@ -492,7 +569,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private int getGoodGuysNumber(){
-            Iterator<ServerSidePlayerDetails> playerDetailsIterator = onlinePlayers.iterator();
+            Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
             RoleNames playerRoleName = null;
             int goodGuysNumber = 0;
             while (playerDetailsIterator.hasNext()){
@@ -513,7 +590,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         ExecutorService executorService = Executors.newCachedThreadPool();
 
-        Iterator<ServerSidePlayerDetails> playerDetailsIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
 
         while(playerDetailsIterator.hasNext()){
             executorService.execute(new Thread(new RunnableWaitToGetReady(playerDetailsIterator.next())));
@@ -531,13 +608,23 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private void night(){
 
+        nightEvents.resetNightEvents();
+
+        informAllPlayersItsNightDoYourAction();
+
+        runTheNightHandlers();
+
+        revealTheDetectedPlayerForDetective();
+
+        killThoseWhoDiedTonight();
+
     }
 
     private void day(){
         tellEveryOneItsChattingTime();
 
         ExecutorService executorService = Executors.newCachedThreadPool();
-        Iterator<ServerSidePlayerDetails> playerDetailsIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
         while (playerDetailsIterator.hasNext()){
             player = playerDetailsIterator.next();
@@ -554,7 +641,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private void tellEveryOneItsChattingTime(){
-        Iterator<ServerSidePlayerDetails> playerDetailsIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
         Command chattingTimeCommand = new Command(CommandTypes.chatRoomStarted,  null);
         while (playerDetailsIterator.hasNext()){
@@ -581,7 +668,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private void tellEveryOneChatIsOver(){
-        Iterator<ServerSidePlayerDetails> playerDetailsIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
         Command chattingTimeCommand = new Command(CommandTypes.chatRoomIsClosed,  null);
 
@@ -613,7 +700,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         informAllPlayersItsVotingTime();
 
         ExecutorService executorService = Executors.newCachedThreadPool();
-        Iterator<ServerSidePlayerDetails> onlinePlayersIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> onlinePlayersIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
 
 
@@ -677,7 +764,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private ArrayList<String> getAlivePlayersUserNames(){
 
-        Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
         ArrayList<String> playersNames = new ArrayList<>();
 
@@ -689,12 +776,27 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return playersNames;
     }
 
+    private ArrayList<String> getAliveBadGuysNames(){
+        ArrayList<String> aliveBadGuysNames = new ArrayList<>();
+        Iterator<ServerSidePlayerDetails> playersIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+        synchronized (alivePlayers){
+            while (playersIterator.hasNext()){
+                player = playersIterator.next();
+                if (RoleNames.isEvil(player.getRoleName())){
+                    aliveBadGuysNames.add(player.getUserName());
+                }
+            }
+        }
 
+        return aliveBadGuysNames;
+
+    }
 
     public void sendMessageToAll(Message message){
         // sending to alive players :
 
-        Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
 
         Command command = new Command(CommandTypes.newMessage , message);
@@ -726,7 +828,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private ServerSidePlayerDetails getPlayerByName(String userName){
-        Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
 
         while (iterator.hasNext()){
@@ -755,7 +857,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private synchronized void sendCommandToOnlinePlayers(Command command){
-        Iterator<ServerSidePlayerDetails> playerIterator = onlinePlayers.iterator();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
 
         while (playerIterator.hasNext()){
@@ -771,9 +873,12 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
-    private synchronized void sendCommandToOnlineAndSpectatorPlayers(Command command){
+    private void sendCommandToOnlineAndSpectatorPlayers(Command command){
         sendCommandToOnlinePlayers(command);
+        sendCommandToSpectators(command);
+    }
 
+    private void sendCommandToSpectators(Command command){
         Iterator<ServerSidePlayerDetails> playerIterator = spectators.iterator();
         ServerSidePlayerDetails player = null;
         while (playerIterator.hasNext()){
@@ -784,14 +889,14 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
+
     private void removePlayerFromOnlinePlayersToSpectators(ServerSidePlayerDetails player){
 
-        synchronized (onlinePlayers){
-            onlinePlayers.remove(player);
+        synchronized (alivePlayers){
+            alivePlayers.remove(player);
         }
 
         synchronized (spectators){
@@ -799,4 +904,127 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
     }
+
+    private void informAllPlayersItsNightDoYourAction(){
+
+        sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.itIsNight , null));
+
+        Command informWithAllOnlinePlayersNames = new Command(CommandTypes.doYourAction , getAlivePlayersUserNames());
+        Command informWithBadGuyPlayersNames = new Command(CommandTypes.doYourAction  , getAliveBadGuysNames());
+
+        sendCommandToEveryOneExceptAliveMayorAndLector(informWithAllOnlinePlayersNames);
+
+        ServerSidePlayerDetails doctorLectorPlayer = findSpecificAliveRolePlayer(RoleNames.doctorLector);
+
+        if (doctorLectorPlayer != null){
+            try {
+                doctorLectorPlayer.sendCommandToPlayer(informWithBadGuyPlayersNames);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void sendCommandToEveryOneExceptAliveMayorAndLector(Command command){
+
+        sendCommandToSpectators(command);
+        Iterator<ServerSidePlayerDetails> alivePlayersIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+        while (alivePlayersIterator.hasNext()){
+            player = alivePlayersIterator.next();
+
+            if(player.getRoleName() != RoleNames.mayor && player.getRoleName() != RoleNames.doctorLector){
+                try {
+                    player.sendCommandToPlayer(command);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void runTheNightHandlers(){
+
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+
+        while (iterator.hasNext()){
+            player = iterator.next();
+            executorService.execute(new RunnableNightPlayerHandler(player));
+        }
+
+        executorService.shutdown();
+
+        try {
+            executorService.awaitTermination(1 , TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void killThoseWhoDiedTonight(){
+
+        ArrayList<ServerSidePlayerDetails> playersWhoDieTonight = nightEvents.getThoseWhoDieTonight();
+        Iterator<ServerSidePlayerDetails> playersWhoDieTonightIterator = playersWhoDieTonight.iterator();
+        ServerSidePlayerDetails player = null;
+        while (playersWhoDieTonightIterator.hasNext()){
+            player = playersWhoDieTonightIterator.next();
+            if(player != null){
+                if(player.getRoleName() == RoleNames.toughGuy && !toughGuyIsHurt){
+                    toughGuyIsHurt = true;
+                }
+                else {
+
+                    sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
+                            "player " + player.getUserName() + " died tonight"));
+
+                    if(player.getRoleName() == RoleNames.professional && nightEvents.mustProfessionalDieForWrongShoot()){
+                        try {
+                            player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "you had wrong shoot"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else if(RoleNames.isEvil(player.getRoleName())) {
+
+                        try {
+                            player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "professional shooted you"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    else {
+                        try {
+                            player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "mafia killed you"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    private void revealTheDetectedPlayerForDetective(){
+        ServerSidePlayerDetails detective = findSpecificAliveRolePlayer(RoleNames.detective);
+
+        if(detective != null){
+            ServerSidePlayerDetails detectedPlayer = nightEvents.getWhoDetectiveWantsToDetect();
+            if(detectedPlayer != null){
+                try {
+                    detective.sendCommandToPlayer(new Command(CommandTypes.serverToClientString,
+                            "player : " + RoleNames.getRoleAsString(detectedPlayer.getRoleName())));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

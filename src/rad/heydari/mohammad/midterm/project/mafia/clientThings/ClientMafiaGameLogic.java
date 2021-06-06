@@ -92,7 +92,6 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             vote(command);
         }
         else if(command.getType() == CommandTypes.doYourAction){
-
             doYourAction(command);
         }
         else if(command.getType() == CommandTypes.serverToClientString){
@@ -220,6 +219,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         if (role instanceof Actionable){
             Actionable actionable = (Actionable) role;
             actionable.action(command);
+        }
+        else {
+            System.out.println("waiting for other players ...");
         }
         // else nothing , the server had handled it before
     }

@@ -54,4 +54,11 @@ public enum RoleNames implements Serializable {
         }
     }
 
+    public static boolean isEvil(RoleNames roleName){
+        if(roleName == mafia || roleName == godFather || roleName == doctorLector){
+            return true;
+        }
+        return false;
+    }
+
 }

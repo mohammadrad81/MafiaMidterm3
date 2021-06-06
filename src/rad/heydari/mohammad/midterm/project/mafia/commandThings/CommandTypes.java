@@ -14,6 +14,7 @@ public enum CommandTypes implements Serializable {
     vote,
     votingResult,
     doYourAction,
+    itIsNight,
     newMessage,
     chatRoomStarted,
     chatRoomIsClosed,
@@ -32,6 +33,7 @@ public enum CommandTypes implements Serializable {
     messageToOthers,
     imReady, // dont want to chat any more
     iVote,
+    iDoMyAction,
 
 
 
