@@ -88,17 +88,15 @@ public class ServerSidePlayerDetails implements Serializable {
     //why a while loop ? :
     public Command receivePlayerRespond() throws IOException {
         Command respond = null;
+        try {
+            respond = (Command) objectInputStream.readObject();
 
-        while (true){
-           try {
-               respond = (Command) objectInputStream.readObject();
-               if(respond != null){
-                   return respond;
-               }
-           }  catch (ClassNotFoundException e) {
-               e.printStackTrace();
-           }
-       }
+
+
+        }  catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return respond;
     }
 
     public void sendTheRoleToThePlayer(RoleNames roleName) throws IOException {

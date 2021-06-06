@@ -48,7 +48,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         initUserNames();
 
+        waitForAllToGetReady();
+
         givePlayersTheirRoles();
+
 
         while (true){ // it should be !isGameOver()
 
@@ -63,7 +66,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
             day();
 
-//            voting();
+            voting();
 
         }
 
@@ -518,6 +521,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         executorService.shutdown();
 
+        try {
+            executorService.awaitTermination(1 , TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -617,7 +625,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         executorService.shutdown();
 
         try {
-            executorService.awaitTermination(35 , TimeUnit.SECONDS);
+            executorService.awaitTermination(5 , TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -626,6 +634,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         if(votingBox.getMostVotedPlayer() == null){
             votingResult = new Command(CommandTypes.votingResult , " no body is lynched today ");
+
+            sendCommandToOnlineAndSpectatorPlayers(votingResult);
 
         }
 
@@ -636,6 +646,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                             " is lynched today , his/her role was : " +
                             RoleNames.getRoleAsString(mostVotedPlayer.getRoleName()));
 
+
+            sendCommandToOnlineAndSpectatorPlayers(votingResult);
+
             removePlayerFromOnlinePlayersToSpectators(mostVotedPlayer);
 
             try {
@@ -644,14 +657,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 e.printStackTrace();
             }
 
-
-
         }
 
+
+
         votingBox.resetTheBox();
-
-        sendCommandToOnlineAndSpectatorPlayers(votingResult);
-
 
     }
 
@@ -682,6 +692,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
 
     public void sendMessageToAll(Message message){
+        // sending to alive players :
 
         Iterator<ServerSidePlayerDetails> iterator = onlinePlayers.iterator();
         ServerSidePlayerDetails player = null;
@@ -689,6 +700,20 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         Command command = new Command(CommandTypes.newMessage , message);
         while (iterator.hasNext()){
             player = iterator.next();
+
+            try {
+                player.sendCommandToPlayer(command);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        //sending message to the spectators ( dead online players ) :
+
+        Iterator<ServerSidePlayerDetails> spectatorsIterator = spectators.iterator();
+        while (spectatorsIterator.hasNext()){
+            player = spectatorsIterator.next();
 
             try {
                 player.sendCommandToPlayer(command);
