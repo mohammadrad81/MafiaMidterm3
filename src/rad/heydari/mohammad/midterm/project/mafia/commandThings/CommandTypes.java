@@ -34,6 +34,9 @@ public enum CommandTypes implements Serializable {
     imReady, // dont want to chat any more
     iVote,
     iDoMyAction,
+    mayorSaysLynch,
+    mayorSaysDontLynch,
+
 
 
 

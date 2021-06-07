@@ -6,16 +6,14 @@ import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.CommandTypes;
 import rad.heydari.mohammad.midterm.project.mafia.gameThings.ServerSideGame;
-import rad.heydari.mohammad.midterm.project.mafia.night.NightAction;
-import rad.heydari.mohammad.midterm.project.mafia.night.NightActionTypes;
+import rad.heydari.mohammad.midterm.project.mafia.night.PlayerAction;
+import rad.heydari.mohammad.midterm.project.mafia.night.PlayersActionTypes;
 import rad.heydari.mohammad.midterm.project.mafia.night.NightEvents;
-import rad.heydari.mohammad.midterm.project.mafia.roleThings.Role;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.RoleNames;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -256,40 +254,40 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         else if(command.getType() == CommandTypes.iDoMyAction){
 
-            NightAction nightAction =(NightAction) command.getCommandNeededThings();
-            if(nightAction.getNightActionType() == NightActionTypes.mafiaVictim){
-                if(nightAction.getNameOfThePlayerActionHappensTo() != null){
+            PlayerAction playerAction =(PlayerAction) command.getCommandNeededThings();
+            if(playerAction.getNightActionType() == PlayersActionTypes.mafiaVictim){
+                if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
-                        nightEvents.mafiaTakesVictim(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()),
+                        nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                                 false);
                     }
                 }
             }
 
-            else if(nightAction.getNightActionType() == NightActionTypes.godFatherVictim){
+            else if(playerAction.getNightActionType() == PlayersActionTypes.godFatherVictim){
                 synchronized (nightEvents){
-                    nightEvents.mafiaTakesVictim(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()),
+                    nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                             true);
                 }
             }
 
-            else if(nightAction.getNightActionType() == NightActionTypes.save){
-                if(nightAction.getNameOfThePlayerActionHappensTo() != null){
+            else if(playerAction.getNightActionType() == PlayersActionTypes.save){
+                if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
-                        nightEvents.save(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()));
+                        nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                     }
                 }
             }
 
-            else if(nightAction.getNightActionType() == NightActionTypes.toughGuySaysShowDeadRoles){
+            else if(playerAction.getNightActionType() == PlayersActionTypes.toughGuySaysShowDeadRoles){
                 synchronized (nightEvents){
                     nightEvents.toughGuySaysShowDeadRoles();
                 }
             }
 
-            else if(nightAction.getNightActionType() == NightActionTypes.detect){
+            else if(playerAction.getNightActionType() == PlayersActionTypes.detect){
                 synchronized (nightEvents){
-                    nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(nightAction.getNameOfThePlayerActionHappensTo()));
+                    nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
             }
 
@@ -617,6 +615,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         revealTheDetectedPlayerForDetective();
 
         killThoseWhoDiedTonight();
+
+        if(nightEvents.isShowDeadRoles()){
+            revealDeadRoles();
+        }
 
     }
 
@@ -1005,6 +1007,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                         }
                     }
 
+                    removePlayerFromOnlinePlayersToSpectators(player);
                 }
             }
         }
@@ -1025,6 +1028,49 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 }
             }
         }
+    }
+
+    private void revealDeadRoles(){
+        StringBuilder revealStringBuilder = new StringBuilder("the tough guy asked to reveal the dead roles : \n");
+        int counter = 0;
+        boolean addedAtLeastOne = false;
+        RoleNames[] roleNamesArr = RoleNames.values();
+        for(RoleNames roleName : roleNamesArr){
+            counter = howManyDeadOnesByRoleName(roleName);
+            if(counter > 0){
+                addedAtLeastOne = true;
+                revealStringBuilder.append(RoleNames.getRoleAsString(roleName)).append(" : ").append(counter).append("\n");
+            }
+        }
+
+        if(! addedAtLeastOne){
+            revealStringBuilder.append("no one has died yet\n");
+        }
+
+        Command deadRoleRevealingCommand = new Command(CommandTypes.serverToClientString , revealStringBuilder.toString());
+        sendCommandToOnlineAndSpectatorPlayers(deadRoleRevealingCommand);
+
+    }
+    private int howManyDeadOnesByRoleName(RoleNames roleName){
+        Iterator<ServerSidePlayerDetails> iterator = offlineDeadOnes.iterator();
+        ServerSidePlayerDetails playerDetails = null;
+        int counter = 0;
+        while (iterator.hasNext()){
+            playerDetails = iterator.next();
+            if(playerDetails.getRoleName() == roleName){
+                counter ++;
+            }
+        }
+
+        iterator = spectators.iterator();
+        while (iterator.hasNext()){
+            playerDetails = iterator.next();
+            if(playerDetails.getRoleName() == roleName){
+                counter ++;
+            }
+        }
+
+        return counter;
     }
 
 }

@@ -1,5 +1,9 @@
 package rad.heydari.mohammad.midterm.project.mafia.InputThings;
 
+import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.NoUserFileUtilException;
+import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
+import rad.heydari.mohammad.midterm.project.mafia.workWithFileThings.FileUtils;
+
 import java.util.Scanner;
 
 /**
@@ -10,15 +14,23 @@ import java.util.Scanner;
 public class LoopedTillRightInput {
 
     private Scanner scanner;
+    private FileUtils fileUtils;
 
     public LoopedTillRightInput(){
-       scanner = new Scanner(new UnClosableStream(System.in));
+        scanner = new Scanner(new UnClosableStream(System.in));
     }
     public String stringInput(){
         String input = null;
 
         input = scanner.nextLine();
-
+        if(input.equals("exit")){
+            System.out.println("you exited the game.");
+            System.exit(0);
+        }
+        else if(input.equals("HISTORY")){
+            printAllMessages();
+            input = stringInput();
+        }
         return input;
     }
 
@@ -52,9 +64,34 @@ public class LoopedTillRightInput {
         return input;
     }
 
-    public void resetTheInput(){
-        this.scanner = new Scanner(new UnClosableStream(System.in));
+    public void createFileUtils(String userName){
+        this.fileUtils = new FileUtils(userName);
     }
 
+    public void saveMessage(Message message) throws NoUserFileUtilException {
+        if(fileUtils == null){
+            throw new NoUserFileUtilException("this input taker has no file util (no username is set for it).");
+        }
+        else {
+            synchronized (fileUtils){
+                fileUtils.saveMessage(message);
+            }
+        }
 
+    }
+
+    public void printAllMessages(){
+        if (fileUtils == null){
+            try {
+                throw new NoUserFileUtilException("this input taker has no file util (no username is set for it).");
+            } catch (NoUserFileUtilException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            synchronized (fileUtils){
+                fileUtils.printAllMessages();
+            }
+        }
+    }
 }

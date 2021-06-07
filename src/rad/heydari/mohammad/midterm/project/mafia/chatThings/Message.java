@@ -15,7 +15,7 @@ public class Message implements Serializable {
         return senderName;
     }
 
-    public String getMessage() {
+    public String getMessageText() {
         return message;
     }
 

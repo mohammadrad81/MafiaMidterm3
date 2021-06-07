@@ -2,17 +2,17 @@ package rad.heydari.mohammad.midterm.project.mafia.night;
 
 import java.io.Serializable;
 
-public class NightAction implements Serializable {
+public class PlayerAction implements Serializable {
 
-    private NightActionTypes nightActionType;
+    private PlayersActionTypes nightActionType;
     private String nameOfThePlayerActionHappensTo;
 
-    public NightAction(NightActionTypes nightActionType, String nameOfThePlayerActionHappensTo) {
+    public PlayerAction(PlayersActionTypes nightActionType, String nameOfThePlayerActionHappensTo) {
         this.nightActionType = nightActionType;
         this.nameOfThePlayerActionHappensTo = nameOfThePlayerActionHappensTo;
     }
 
-    public NightActionTypes getNightActionType() {
+    public PlayersActionTypes getNightActionType() {
         return nightActionType;
     }
 

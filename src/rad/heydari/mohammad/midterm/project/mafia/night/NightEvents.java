@@ -119,4 +119,12 @@ public class NightEvents {
     public ServerSidePlayerDetails getWhoDetectiveWantsToDetect() {
         return detectiveWantsToDetect;
     }
+
+    public ServerSidePlayerDetails getMutedOne() {
+        return mutedOne;
+    }
+
+    public void setMutedOne(ServerSidePlayerDetails mutedOne) {
+        this.mutedOne = mutedOne;
+    }
 }

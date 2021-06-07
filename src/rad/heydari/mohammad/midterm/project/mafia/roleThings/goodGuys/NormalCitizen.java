@@ -9,7 +9,7 @@ public class NormalCitizen implements GoodGuys {
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
     private String roleNameString;
-    public NormalCitizen(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) {
+    public NormalCitizen(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream ) {
         this.objectInputStream = objectInputStream;
         this.objectOutputStream = objectOutputStream;
         this.roleNameString = "normal citizen";

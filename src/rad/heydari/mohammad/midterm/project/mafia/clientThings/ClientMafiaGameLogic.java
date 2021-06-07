@@ -1,6 +1,7 @@
 package rad.heydari.mohammad.midterm.project.mafia.clientThings;
 
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
+import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.NoUserFileUtilException;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientMessageSender;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientVote;
 import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
@@ -77,6 +78,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
         if (command.getType() == CommandTypes.determineYourUserName){
             determineUserName();
+            loopedTillRightInput.createFileUtils(userName);
         }
 
         else if(command.getType() == CommandTypes.yourUserNameIsSet ){
@@ -103,6 +105,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         else if(command.getType() == CommandTypes.youAreDead){
             die(command);
         }
+
 
     }
 
@@ -134,12 +137,17 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
 
         Command command = null;
-
+        Message message = null;
         do {
             command =  receiveServerCommand();
 
             if(command.getType() == CommandTypes.newMessage){
-                printMessage((Message) command.getCommandNeededThings());
+                printMessage(message = (Message) command.getCommandNeededThings());
+                try {
+                    loopedTillRightInput.saveMessage(message);
+                } catch (NoUserFileUtilException e) {
+                    e.printStackTrace();
+                }
             }
 
             else if(command.getType() != CommandTypes.chatRoomIsClosed){ // just in case :
@@ -227,7 +235,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     public void takeYourRole(Command command){
-        this.role = (Role) generateRole((RoleNames) command.getCommandNeededThings() ,
+        this.role =  generateRole((RoleNames) command.getCommandNeededThings() ,
                 objectOutputStream ,
                 objectInputStream);
         printTheClientsRole();
@@ -304,34 +312,34 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     public Role generateRole(RoleNames roleName , ObjectOutputStream objectOutputStream , ObjectInputStream objectInputStream){
         if(roleName == RoleNames.godFather){
-            return new GodFather(objectInputStream , objectOutputStream);
+            return new GodFather(objectInputStream , objectOutputStream , userName);
         }
         else if(roleName == RoleNames.doctorLector){
-            return new DoctorLector(objectInputStream , objectOutputStream);
+            return new DoctorLector(objectInputStream , objectOutputStream ,userName);
         }
         else if(roleName == RoleNames.detective){
-            return new Detective(objectInputStream , objectOutputStream);
+            return new Detective(objectInputStream , objectOutputStream, userName);
         }
         else if(roleName ==  RoleNames.mafia){
-            return new Mafia(objectInputStream , objectOutputStream);
+            return new Mafia(objectInputStream , objectOutputStream , userName);
         }
         else if(roleName == RoleNames.mayor){
-            return new Mayor(objectInputStream , objectOutputStream);
+            return new Mayor(objectInputStream , objectOutputStream , userName);
         }
         else if(roleName == RoleNames.normalCitizen){
             return new NormalCitizen(objectInputStream , objectOutputStream);
         }
         else if(roleName == RoleNames.professional){
-            return new Professional(objectInputStream , objectOutputStream);
+            return new Professional(objectInputStream , objectOutputStream , userName);
         }
         else if(roleName == RoleNames.therapist){
-            return new Therapist(objectInputStream , objectOutputStream);
+            return new Therapist(objectInputStream , objectOutputStream , userName);
         }
         else if(roleName == RoleNames.toughGuy){
-            return new ToughGuy(objectInputStream , objectOutputStream);
+            return new ToughGuy(objectInputStream , objectOutputStream , userName);
         }
         else if(roleName == RoleNames.townDoctor){
-            return new TownDoctor(objectInputStream , objectOutputStream);
+            return new TownDoctor(objectInputStream , objectOutputStream , userName);
         }
         else{
             return null;
@@ -390,7 +398,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     private void printMessage(Message message){
         System.out.println(message.getSenderName() + ": ");
-        System.out.println(message.getMessage());
+        System.out.println(message.getMessageText());
     }
 
     private void die(Command command){
