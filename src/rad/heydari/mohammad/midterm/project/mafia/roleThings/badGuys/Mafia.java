@@ -40,7 +40,7 @@ public class Mafia extends Actionable implements BadGuys {
                 System.out.println("you have chosen no one to kill tonight");
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
                         new PlayerAction(PlayersActionTypes.mafiaVictim ,
-                        null));
+                        null  , getUserName()));
                 correctlyDone = true;
             }
 
@@ -48,7 +48,7 @@ public class Mafia extends Actionable implements BadGuys {
                 System.out.println(" you choose to kill " + othersNames.get(input - 1));
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
                         new PlayerAction(PlayersActionTypes.mafiaVictim ,
-                                othersNames.get(input - 1 )));
+                                othersNames.get(input - 1 ) , getUserName()));
                 correctlyDone = true;
             }
             else {

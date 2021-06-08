@@ -4,21 +4,31 @@ import java.io.Serializable;
 
 public class PlayerAction implements Serializable {
 
-    private PlayersActionTypes nightActionType;
+    private PlayersActionTypes PlayerActionType;
     private String nameOfThePlayerActionHappensTo;
-
-    public PlayerAction(PlayersActionTypes nightActionType, String nameOfThePlayerActionHappensTo) {
-        this.nightActionType = nightActionType;
+    private String actionDoerName;
+    public PlayerAction(PlayersActionTypes PlayerActionType, String nameOfThePlayerActionHappensTo) {
+        this.PlayerActionType = PlayerActionType;
         this.nameOfThePlayerActionHappensTo = nameOfThePlayerActionHappensTo;
     }
+    public PlayerAction(PlayersActionTypes playerActionType ,
+                        String nameOfThePlayerActionHappensTo ,
+                        String actionDoerName){
 
-    public PlayersActionTypes getNightActionType() {
-        return nightActionType;
+        this.PlayerActionType = playerActionType;
+        this.nameOfThePlayerActionHappensTo = nameOfThePlayerActionHappensTo;
+        this.actionDoerName = actionDoerName;
+    }
+
+    public PlayersActionTypes getPlayerActionType() {
+        return PlayerActionType;
     }
 
     public String getNameOfThePlayerActionHappensTo() {
         return nameOfThePlayerActionHappensTo;
     }
 
-
+    public String getActionDoerName() {
+        return actionDoerName;
+    }
 }

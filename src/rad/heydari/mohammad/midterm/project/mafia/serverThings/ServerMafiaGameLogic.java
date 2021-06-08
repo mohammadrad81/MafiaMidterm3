@@ -286,49 +286,49 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         else if(command.getType() == CommandTypes.iDoMyAction){
             PlayerAction playerAction =(PlayerAction) command.getCommandNeededThings();
-            if(playerAction.getNightActionType() == PlayersActionTypes.mafiaVictim){
+            if(playerAction.getPlayerActionType() == PlayersActionTypes.mafiaVictim){
                 if(playerAction.getNameOfThePlayerActionHappensTo() != null){
-                    notifyAliveBadGuysAMafiaMemberChoice(playerAction.getNameOfThePlayerActionHappensTo());
+                    notifyAliveBadGuysAMafiaMemberChoice(playerAction);
                     synchronized (nightEvents){
                         nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                                 false);
                     }
                 }
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.godFatherVictim){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.godFatherVictim){
                 notifyAliveBadGuysTheGodfatherChoice(playerAction.getNameOfThePlayerActionHappensTo());
                 synchronized (nightEvents){
                     nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                             true);
                 }
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.townDoctorSave){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.townDoctorSave){
                 if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
                         nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                     }
                 }
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.doctorLectorSave){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.doctorLectorSave){
                 notifyAliveBadGuysTheDoctorLectorChoice(playerAction.getNameOfThePlayerActionHappensTo());
                 nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.toughGuySaysShowDeadRoles){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.toughGuySaysShowDeadRoles){
                 synchronized (nightEvents){
                     nightEvents.toughGuySaysShowDeadRoles();
                 }
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.detect){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.detect){
                 synchronized (nightEvents){
                     nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.mute){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.mute){
                 synchronized (nightEvents){
                     nightEvents.mute(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
             }
-            else if(playerAction.getNightActionType() == PlayersActionTypes.professionalShoots){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.professionalShoots){
                 synchronized (nightEvents){
                     nightEvents.professionalShoots(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
@@ -1217,22 +1217,21 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         sendCommandToAliveBadGuys(doctorLectorChoiceNotifyCommand);
     }
 
-    private void notifyAliveBadGuysAMafiaMemberChoice(String mafiaChoice){
+    private void notifyAliveBadGuysAMafiaMemberChoice(PlayerAction mafiaChoice){
         Command mafiaChoiceNotifyCommand = null;
 
-        if(mafiaChoice == null){
+        if(mafiaChoice.getNameOfThePlayerActionHappensTo() == null){
             mafiaChoiceNotifyCommand =
                     new Command(CommandTypes.serverToClientString ,
-                    "secret message for mafia : a member thinks we better don't kill anyone tonight .");
+                    mafiaChoice.getActionDoerName() + " thinks we better don't kill anyone tonight .");
         }
         else {
             mafiaChoiceNotifyCommand =
                     new Command(CommandTypes.serverToClientString ,
-                            "secret message for mafia : a member thinks we better kill " +
+                            mafiaChoice.getActionDoerName() + " thinks we better kill " +
                                     mafiaChoice +
                                     " tonight.");
         }
-
         sendCommandToAliveBadGuys(mafiaChoiceNotifyCommand);
     }
 
