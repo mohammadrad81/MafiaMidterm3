@@ -105,7 +105,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             die(command);
         }
         else if(command.getType() == CommandTypes.endOfTheGame){
-
+            endOfTheGame(command);
         }
 
 
@@ -421,7 +421,8 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     private void endOfTheGame(Command command){
-
+        System.out.println(command.getCommandNeededThings());
+        System.exit(0);
     }
 
 }
