@@ -21,7 +21,6 @@ public class LoopedTillRightInput {
     }
     public String stringInput(){
         String input = null;
-
         input = scanner.nextLine();
         if(input.equals("exit")){
             System.out.println("you exited the game.");

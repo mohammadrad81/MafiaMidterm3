@@ -34,7 +34,6 @@ public class Mafia extends Actionable implements BadGuys {
         while (! correctlyDone){
             System.out.println("choose who to die tonight (as a mafia) : ");
             printStringArrayList(othersNames);
-
             input = scanner.nextInt();
 
             if(input == 0){

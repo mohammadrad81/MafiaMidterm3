@@ -55,7 +55,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         givePlayersTheirRoles();
 
 
-        while (true){ // it should be !isGameOver()
+        while (! isGameOver()){ // it should be !isGameOver()
 
             if(! playersHaveBeenIntroduced){
                 introductionNight();
@@ -72,10 +72,42 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         }
 
+        gameEnding();
 
     }
 
     private void gameEnding(){
+        ArrayList<ServerSidePlayerDetails> winnersArrayList = null;
+        ArrayList<ServerSidePlayerDetails> losersArrayList = null;
+        String endOfTheGame ="! END OF THE GAME !\nthe winner team : ";
+        if(didTownWinTheGame()){
+
+            endOfTheGame += " villagers\n";
+            winnersArrayList = getGoodGuysNoMatterDeadOrAlive();
+            losersArrayList = getBadGuysNoMatterDeadOrAlive();
+
+        }
+        else {
+
+            endOfTheGame += " mafias\n";
+            winnersArrayList = getBadGuysNoMatterDeadOrAlive();
+            losersArrayList = getGoodGuysNoMatterDeadOrAlive();
+
+        }
+
+        endOfTheGame += "WINNERS : \n";
+
+        for(ServerSidePlayerDetails player : winnersArrayList){
+            endOfTheGame += player.getUserName() + " was : " + RoleNames.getRoleAsString(player.getRoleName()) + "\n";
+        }
+
+        endOfTheGame += "LOSERS : ";
+
+        for(ServerSidePlayerDetails player : losersArrayList){
+            endOfTheGame += player.getUserName() + " was : " + RoleNames.getRoleAsString(player.getRoleName()) + "\n";
+        }
+
+        sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.endOfTheGame , endOfTheGame));
 
     }
 
@@ -253,44 +285,54 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
         else if(command.getType() == CommandTypes.iDoMyAction){
-
             PlayerAction playerAction =(PlayerAction) command.getCommandNeededThings();
             if(playerAction.getNightActionType() == PlayersActionTypes.mafiaVictim){
                 if(playerAction.getNameOfThePlayerActionHappensTo() != null){
+                    notifyAliveBadGuysAMafiaMemberChoice(playerAction.getNameOfThePlayerActionHappensTo());
                     synchronized (nightEvents){
                         nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                                 false);
                     }
                 }
             }
-
             else if(playerAction.getNightActionType() == PlayersActionTypes.godFatherVictim){
+                notifyAliveBadGuysTheGodfatherChoice(playerAction.getNameOfThePlayerActionHappensTo());
                 synchronized (nightEvents){
                     nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                             true);
                 }
             }
-
-            else if(playerAction.getNightActionType() == PlayersActionTypes.save){
+            else if(playerAction.getNightActionType() == PlayersActionTypes.townDoctorSave){
                 if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
                         nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                     }
                 }
             }
-
+            else if(playerAction.getNightActionType() == PlayersActionTypes.doctorLectorSave){
+                notifyAliveBadGuysTheDoctorLectorChoice(playerAction.getNameOfThePlayerActionHappensTo());
+                nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+            }
             else if(playerAction.getNightActionType() == PlayersActionTypes.toughGuySaysShowDeadRoles){
                 synchronized (nightEvents){
                     nightEvents.toughGuySaysShowDeadRoles();
                 }
             }
-
             else if(playerAction.getNightActionType() == PlayersActionTypes.detect){
                 synchronized (nightEvents){
                     nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
             }
-
+            else if(playerAction.getNightActionType() == PlayersActionTypes.mute){
+                synchronized (nightEvents){
+                    nightEvents.mute(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                }
+            }
+            else if(playerAction.getNightActionType() == PlayersActionTypes.professionalShoots){
+                synchronized (nightEvents){
+                    nightEvents.professionalShoots(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                }
+            }
         }
         // other things :
     }
@@ -338,7 +380,6 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 //            }
 //        }
 //    }
-
     private void introductionNight(){
 
         mafiaIntroduction();
@@ -541,7 +582,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private boolean isGameOver(){
 
-        if(getBadGuysNumber() >= getGoodGuysNumber()){
+        if(getAliveBadGuysNumber() >= getAliveGoodGuysNumber()){
+            return true;
+        }
+
+        else if(getAliveBadGuysNumber() == 0){
             return true;
         }
 
@@ -549,7 +594,17 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
-    private int getBadGuysNumber(){
+    private boolean didTownWinTheGame(){
+
+        if(getAliveBadGuysNumber() == 0){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    private int getAliveBadGuysNumber(){
         Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         RoleNames playerRoleName = null;
         int badGuysNumber = 0;
@@ -566,7 +621,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return badGuysNumber;
     }
 
-    private int getGoodGuysNumber(){
+    private int getAliveGoodGuysNumber(){
             Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
             RoleNames playerRoleName = null;
             int goodGuysNumber = 0;
@@ -605,7 +660,6 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private void night(){
-
         nightEvents.resetNightEvents();
 
         informAllPlayersItsNightDoYourAction();
@@ -616,10 +670,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         killThoseWhoDiedTonight();
 
-        if(nightEvents.isShowDeadRoles()){
+        if(nightEvents.isShowDeadRoles()) {
             revealDeadRoles();
         }
-
     }
 
     private void day(){
@@ -699,6 +752,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private void voting(){
         Command votingResult;
+        Command finalResult;
         informAllPlayersItsVotingTime();
 
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -714,41 +768,57 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         executorService.shutdown();
 
         try {
-            executorService.awaitTermination(5 , TimeUnit.MINUTES);
+            executorService.awaitTermination(6 , TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-
-
         if(votingBox.getMostVotedPlayer() == null){
-            votingResult = new Command(CommandTypes.votingResult , " no body is lynched today ");
+            votingResult = new Command(CommandTypes.votingResult , " no body is lynched today");
 
             sendCommandToOnlineAndSpectatorPlayers(votingResult);
 
         }
 
         else {
+            // you should ask mayor to cancel the voting or not :
+            //re write it
             ServerSidePlayerDetails mostVotedPlayer = votingBox.getMostVotedPlayer();
             votingResult = new Command(CommandTypes.votingResult ,
                     mostVotedPlayer.getUserName() +
-                            " is lynched today , his/her role was : " +
+                            " is about to lynch today , his/her role was : " +
                             RoleNames.getRoleAsString(mostVotedPlayer.getRoleName()));
-
 
             sendCommandToOnlineAndSpectatorPlayers(votingResult);
 
-            removePlayerFromOnlinePlayersToSpectators(mostVotedPlayer);
+            if(mayorSaysToLynchOrNot()){
 
-            try {
-                mostVotedPlayer.sendCommandToPlayer(new Command(CommandTypes.youAreDead , " you are lynched "));
-            } catch (IOException e) {
-                e.printStackTrace();
+                finalResult = new Command(CommandTypes.serverToClientString ,
+                        "the player " +
+                                mostVotedPlayer.getUserName() +
+                        " is lynched today");
+                sendCommandToOnlineAndSpectatorPlayers(finalResult);
+
+                try {
+                    mostVotedPlayer.sendCommandToPlayer(new Command(CommandTypes.youAreDead , " you are lynched "));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                removePlayerFromOnlinePlayersToSpectators(mostVotedPlayer);
             }
 
+            else {
+                 finalResult = new Command(CommandTypes.serverToClientString , "the mayor canceled the lynch . ");
+                 sendCommandToOnlineAndSpectatorPlayers(finalResult);
+            }
+
+
+
+
+
+
         }
-
-
 
         votingBox.resetTheBox();
 
@@ -763,6 +833,36 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 //        Command votingIsOver = new Command(CommandTypes. , null);
 //        sendCommandToOnlineAndSpectatorPlayers(votingIsOver);
 //    }
+
+    private boolean mayorSaysToLynchOrNot(){
+        ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
+        Command mayorRespond = null;
+
+        if(mayor == null){
+            return true; //lynch
+        }
+        else {
+            try {
+                mayor.sendCommandToPlayer(new Command(CommandTypes.doYourAction , null));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                mayorRespond = mayor.receivePlayerRespond();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(mayorRespond.getType() == CommandTypes.mayorSaysLynch){
+                return true;//lynch
+            }
+            else if(mayorRespond.getType() == CommandTypes.mayorSaysDontLynch){
+                return false;//don't lynch
+            }
+        }
+
+        return false;
+    }
 
     private ArrayList<String> getAlivePlayersUserNames(){
 
@@ -894,7 +994,6 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
-
     private void removePlayerFromOnlinePlayersToSpectators(ServerSidePlayerDetails player){
 
         synchronized (alivePlayers){
@@ -1019,7 +1118,22 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         if(detective != null){
             ServerSidePlayerDetails detectedPlayer = nightEvents.getWhoDetectiveWantsToDetect();
+            Command detectionResult = null;
             if(detectedPlayer != null){
+                if(RoleNames.isEvil(detectedPlayer.getRoleName()) && detectedPlayer.getRoleName() != RoleNames.godFather){
+                    detectionResult = new Command(CommandTypes.serverToClientString ,
+                            "the player : " +
+                                    detectedPlayer +
+                            " is evil ( bad guy ).");
+                }
+
+                else {
+                    detectionResult = new Command(CommandTypes.serverToClientString ,
+                            "the player : " +
+                                    detectedPlayer +
+                            " is not evil ( he is a good guy ) .");
+                }
+
                 try {
                     detective.sendCommandToPlayer(new Command(CommandTypes.serverToClientString,
                             "player : " + RoleNames.getRoleAsString(detectedPlayer.getRoleName())));
@@ -1051,6 +1165,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         sendCommandToOnlineAndSpectatorPlayers(deadRoleRevealingCommand);
 
     }
+
     private int howManyDeadOnesByRoleName(RoleNames roleName){
         Iterator<ServerSidePlayerDetails> iterator = offlineDeadOnes.iterator();
         ServerSidePlayerDetails playerDetails = null;
@@ -1073,4 +1188,138 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return counter;
     }
 
+    private void sendCommandToAliveBadGuys(Command command){
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails playerDetails = null;
+        while (playerDetailsIterator.hasNext()){
+            playerDetails = playerDetailsIterator.next();
+            if(RoleNames.isEvil(playerDetails.getRoleName())){
+                try {
+                    playerDetails.sendCommandToPlayer(command);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void notifyAliveBadGuysTheDoctorLectorChoice(String doctorLectorChoice){
+        Command doctorLectorChoiceNotifyCommand = null;
+        if(doctorLectorChoice == null){
+            doctorLectorChoiceNotifyCommand =
+                    new Command(CommandTypes.serverToClientString ,
+                            "doctor lector saved the player : " +
+                    doctorLectorChoice);
+        }
+        else {
+            doctorLectorChoiceNotifyCommand = new Command(CommandTypes.serverToClientString , "doctor lector saved nobody");
+        }
+        sendCommandToAliveBadGuys(doctorLectorChoiceNotifyCommand);
+    }
+
+    private void notifyAliveBadGuysAMafiaMemberChoice(String mafiaChoice){
+        Command mafiaChoiceNotifyCommand = null;
+
+        if(mafiaChoice == null){
+            mafiaChoiceNotifyCommand =
+                    new Command(CommandTypes.serverToClientString ,
+                    "secret message for mafia : a member thinks we better don't kill anyone tonight .");
+        }
+        else {
+            mafiaChoiceNotifyCommand =
+                    new Command(CommandTypes.serverToClientString ,
+                            "secret message for mafia : a member thinks we better kill " +
+                                    mafiaChoice +
+                                    " tonight.");
+        }
+
+        sendCommandToAliveBadGuys(mafiaChoiceNotifyCommand);
+    }
+
+    private void notifyAliveBadGuysTheGodfatherChoice(String godfatherChoice){
+        Command godfatherChoiceNotifyCommand = null;
+
+        if(godfatherChoice == null){
+            godfatherChoiceNotifyCommand =
+                    new Command(CommandTypes.serverToClientString ,
+                    "the great godfather says we don't kill anyone tonight .");
+        }
+        else {
+            godfatherChoiceNotifyCommand =
+                    new Command(CommandTypes.serverToClientString ,
+                            "the great godfather says we kill " +
+                                    godfatherChoice +
+                            " tonight .");
+        }
+        sendCommandToAliveBadGuys(godfatherChoiceNotifyCommand);
+    }
+
+    private ArrayList<ServerSidePlayerDetails> getGoodGuysNoMatterDeadOrAlive(){
+        ArrayList<ServerSidePlayerDetails> goodGuysArrayList = new ArrayList<>();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+
+            if(! RoleNames.isEvil(player.getRoleName())){
+                goodGuysArrayList.add(player);
+            }
+
+        }
+
+        playerIterator = spectators.iterator();
+
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+            if(!RoleNames.isEvil(player.getRoleName())){
+                goodGuysArrayList.add(player);
+            }
+        }
+
+        playerIterator = offlineDeadOnes.iterator();
+
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+            if(!RoleNames.isEvil(player.getRoleName())){
+                goodGuysArrayList.add(player);
+            }
+        }
+
+        return goodGuysArrayList;
+    }
+
+    private ArrayList<ServerSidePlayerDetails> getBadGuysNoMatterDeadOrAlive(){
+        ArrayList<ServerSidePlayerDetails> badGuysArrayList = new ArrayList<>();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+
+            if(RoleNames.isEvil(player.getRoleName())){
+                badGuysArrayList.add(player);
+            }
+
+        }
+
+        playerIterator = spectators.iterator();
+
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+            if(RoleNames.isEvil(player.getRoleName())){
+                badGuysArrayList.add(player);
+            }
+        }
+
+        playerIterator = offlineDeadOnes.iterator();
+
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+            if(RoleNames.isEvil(player.getRoleName())){
+                badGuysArrayList.add(player);
+            }
+        }
+
+        return badGuysArrayList;
+    }
 }

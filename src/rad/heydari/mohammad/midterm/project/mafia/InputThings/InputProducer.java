@@ -45,4 +45,9 @@ public class InputProducer {
         return consumingString;
     }
 
+    public void clearInputs(){
+        synchronized (inputs){
+            inputs = new ArrayList<>();
+        }
+    }
 }

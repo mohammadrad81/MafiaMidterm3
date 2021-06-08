@@ -25,6 +25,7 @@ public enum CommandTypes implements Serializable {
     serverToClientString,
     waitingForClientToGetReady,
     youAreDead,
+    endOfTheGame,
 
     // client to server command type :
 

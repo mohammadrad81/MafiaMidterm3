@@ -29,7 +29,7 @@ public class Therapist extends Actionable implements GoodGuys {
         int input = 0;
         Command actionCommand = null;
         while (! correctlyDone){
-            System.out.println("choose to save somebody : ");
+            System.out.println("choose somebody to mute tomorrow : ");
             printNameArrayList(othersNames);
             input = scanner.nextInt();
             if(input == 0){

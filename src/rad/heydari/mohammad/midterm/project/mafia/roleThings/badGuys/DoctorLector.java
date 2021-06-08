@@ -33,11 +33,13 @@ public class DoctorLector extends Actionable implements BadGuys {
         Command actionCommand = null;
 
         while (! correctlyDone){
+            System.out.println("choose someone to save doctor lector : ");
+            printStringArrayList(badGuysNames);
             input = scanner.nextInt();
             if(input == 0){
                 System.out.println("ok , you have chosen to don't save any one .");
                 actionCommand = new Command(CommandTypes.iDoMyAction,
-                        new PlayerAction(PlayersActionTypes.save ,
+                        new PlayerAction(PlayersActionTypes.doctorLectorSave,
                                 null));
                 correctlyDone = true;
 
@@ -45,7 +47,7 @@ public class DoctorLector extends Actionable implements BadGuys {
             else if(input > 0 && input <= badGuysNames.size()){
                 System.out.println("ok , you have chosen to save " + badGuysNames.get(input - 1));
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
-                        new PlayerAction(PlayersActionTypes.save ,
+                        new PlayerAction(PlayersActionTypes.doctorLectorSave,
                         badGuysNames.get(input - 1)));
                 correctlyDone = true;
             }
@@ -59,6 +61,7 @@ public class DoctorLector extends Actionable implements BadGuys {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
+
 }

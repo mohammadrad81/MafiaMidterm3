@@ -80,7 +80,6 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             determineUserName();
             loopedTillRightInput.createFileUtils(userName);
         }
-
         else if(command.getType() == CommandTypes.yourUserNameIsSet ){
             confirmPlayerUsername(command);
         }
@@ -104,6 +103,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
         else if(command.getType() == CommandTypes.youAreDead){
             die(command);
+        }
+        else if(command.getType() == CommandTypes.endOfTheGame){
+
         }
 
 
@@ -177,17 +179,22 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     public void vote(Command command){
-
+        System.out.println("! VOTING TIME !");
         ExecutorService executorService = null;
         Future<?> future = null;
         Command receivingCommand = null;
 
         if(isAlive){
+            System.out.println(" vote somebody to lynch today : ");
             ArrayList<String> playersNames =(ArrayList<String>) command.getCommandNeededThings();
             playersNames.remove(userName);
              executorService = Executors.newCachedThreadPool();
              future = executorService.submit(new Thread(new RunnableClientVote(userName , playersNames , objectOutputStream)));
             executorService.shutdown();
+        }
+
+        else {
+            System.out.println("waiting for alive players to vote ...");
         }
 
 
@@ -224,12 +231,18 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     public void doYourAction(Command command){
-        if (role instanceof Actionable){
-            Actionable actionable = (Actionable) role;
-            actionable.action(command);
+        if(isAlive){
+            if (role instanceof Actionable){
+                Actionable actionable = (Actionable) role;
+                actionable.action(command);
+            }
+            else {
+                System.out.println("waiting for other players ...");
+            }
         }
+
         else {
-            System.out.println("waiting for other players ...");
+            System.out.println("it is night , waiting for other players to do their actions .");
         }
         // else nothing , the server had handled it before
     }
@@ -405,6 +418,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         isAlive = false;
         System.out.println("you are dead");
         System.out.println("reason : " + command.getCommandNeededThings());
+    }
+
+    private void endOfTheGame(Command command){
+
     }
 
 }

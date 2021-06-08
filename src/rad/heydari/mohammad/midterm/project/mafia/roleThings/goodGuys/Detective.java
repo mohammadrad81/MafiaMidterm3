@@ -30,6 +30,7 @@ public class Detective extends Actionable {
 
         while (! correctlyDone) {
             System.out.println("choose someOne to know he is evil or not : ");
+            printStringArrayList(othersNames);
             input = scanner.nextInt();
 
             if(input == 0){

@@ -6,7 +6,8 @@ public enum PlayersActionTypes implements Serializable {
 
     godFatherVictim,
     mafiaVictim,
-    save,
+    townDoctorSave,
+    doctorLectorSave,
     detect,
     toughGuySaysShowDeadRoles,
     mute,
