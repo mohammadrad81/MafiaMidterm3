@@ -65,10 +65,21 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             else {
                 night();
             }
+            if(!isGodfatherAlive()){
+                godfatherSubstitution();
+            }
+
+            if(isGameOver()){
+                break;
+            }
 
             day();
 
             voting();
+
+            if( ! isGodfatherAlive()){
+                godfatherSubstitution();
+            }
 
         }
 
@@ -1327,5 +1338,57 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
         return badGuysArrayList;
+    }
+
+    private boolean isGodfatherAlive(){
+        if(findSpecificAliveRolePlayer(RoleNames.godFather) == null){
+           return false;
+       }
+        return true;
+    }
+
+    private void godfatherSubstitution(){
+        ArrayList<ServerSidePlayerDetails> aliveBadGuys = getAliveBadGuys();
+        Command youAreGodfatherCommand = new Command(CommandTypes.takeYourRole , RoleNames.godFather);
+        ServerSidePlayerDetails player = null;
+        if(aliveBadGuys.size() == 1){
+
+            try {
+                aliveBadGuys.get(0).sendCommandToPlayer(youAreGodfatherCommand);
+                aliveBadGuys.get(0).setRoleName(RoleNames.godFather);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        else {
+            Iterator<ServerSidePlayerDetails> aliveBadGuysIterator = aliveBadGuys.iterator();
+            while (aliveBadGuysIterator.hasNext()){
+                player = aliveBadGuysIterator.next();
+                if(player.getRoleName() != RoleNames.doctorLector){
+                    try {
+                        player.sendCommandToPlayer(youAreGodfatherCommand);
+                        player.setRoleName(RoleNames.godFather);
+                        break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private ArrayList<ServerSidePlayerDetails> getAliveBadGuys(){
+        ArrayList<ServerSidePlayerDetails> aliveBadGuys = new ArrayList<>();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+        while (playerIterator.hasNext()){
+            player = playerIterator.next();
+            if(RoleNames.isEvil(player.getRoleName())){
+                aliveBadGuys.add(player);
+            }
+        }
+
+        return aliveBadGuys;
     }
 }
