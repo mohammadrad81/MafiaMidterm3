@@ -338,8 +338,14 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     private void notifyOthersThisVote(Vote vote){
+        String  voteDescription = null;
+        if(vote.getSuspectName() == null){
+            voteDescription = "voting : " + vote.getVoterName() + " voted nobody" ;
+        }
+        else {
+            voteDescription = "voting : " + vote.getVoterName() + "voted player : " + vote.getSuspectName();
+        }
 
-        String voteDescription = "voting : " + vote.getVoterName() + " voted " + vote.getSuspectName();
         Command someOneVoted = new Command(CommandTypes.serverToClientString , voteDescription);
         sendCommandToOnlineAndSpectatorPlayers(someOneVoted);
 
@@ -368,7 +374,6 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         return false;
     }
-
 //    private void deleteThePlayersWithoutUserNames(){
 //        Iterator<ServerSidePlayerDetails> iterator = playerDetailsArrayList.iterator();
 //        while (iterator.hasNext()){
@@ -786,8 +791,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             ServerSidePlayerDetails mostVotedPlayer = votingBox.getMostVotedPlayer();
             votingResult = new Command(CommandTypes.votingResult ,
                     mostVotedPlayer.getUserName() +
-                            " is about to lynch today , his/her role was : " +
-                            RoleNames.getRoleAsString(mostVotedPlayer.getRoleName()));
+                            " is about to lynch today .");
 
             sendCommandToOnlineAndSpectatorPlayers(votingResult);
 
@@ -796,7 +800,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 finalResult = new Command(CommandTypes.serverToClientString ,
                         "the player " +
                                 mostVotedPlayer.getUserName() +
-                        " is lynched today");
+                        " is lynched today ; his role was : " +
+                                RoleNames.getRoleAsString(mostVotedPlayer.getRoleName()));
                 sendCommandToOnlineAndSpectatorPlayers(finalResult);
 
                 try {
@@ -1206,13 +1211,15 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     private void notifyAliveBadGuysTheDoctorLectorChoice(String doctorLectorChoice){
         Command doctorLectorChoiceNotifyCommand = null;
         if(doctorLectorChoice == null){
+            doctorLectorChoiceNotifyCommand = new Command(CommandTypes.serverToClientString , "doctor lector saved nobody");
+
+        }
+        else {
             doctorLectorChoiceNotifyCommand =
                     new Command(CommandTypes.serverToClientString ,
                             "doctor lector saved the player : " +
-                    doctorLectorChoice);
-        }
-        else {
-            doctorLectorChoiceNotifyCommand = new Command(CommandTypes.serverToClientString , "doctor lector saved nobody");
+                                    doctorLectorChoice);
+
         }
         sendCommandToAliveBadGuys(doctorLectorChoiceNotifyCommand);
     }

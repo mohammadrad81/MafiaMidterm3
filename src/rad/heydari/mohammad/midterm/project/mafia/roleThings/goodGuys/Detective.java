@@ -41,7 +41,7 @@ public class Detective extends Actionable {
                 correctlyDone = true;
             }
             else if(input > 0 && input <= othersNames.size()){
-                System.out.println("ok , you have chosen to know " + othersNames.get(input - 1)+ "is evil or not .");
+                System.out.println("ok , you have chosen to know " + othersNames.get(input - 1)+ " is evil or not .");
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
                         new PlayerAction(PlayersActionTypes.detect ,
                         othersNames.get(input - 1)));

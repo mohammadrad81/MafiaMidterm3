@@ -33,10 +33,12 @@ public class Therapist extends Actionable implements GoodGuys {
             printNameArrayList(othersNames);
             input = scanner.nextInt();
             if(input == 0){
+                System.out.println("you mute nobody today .");
                 actionCommand = new Command(CommandTypes.iDoMyAction , new PlayerAction(PlayersActionTypes.mute , null));
                 correctlyDone = true;
             }
             else if(input > 0 && input <=othersNames.size() ){
+                System.out.println("you mute player : " + othersNames.get(input - 1));
                 actionCommand = new Command(CommandTypes.iDoMyAction , new PlayerAction(PlayersActionTypes.mute , othersNames.get(input -1 )));
                 correctlyDone = true;
             }

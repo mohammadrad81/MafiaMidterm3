@@ -17,6 +17,6 @@ public class NormalCitizen implements GoodGuys {
 
     @Override
     public String getRoleNameString() {
-        return null;
+        return roleNameString;
     }
 }

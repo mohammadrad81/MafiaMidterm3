@@ -7,6 +7,7 @@ import rad.heydari.mohammad.midterm.project.mafia.night.PlayersActionTypes;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.Actionable;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.GoodGuys;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
@@ -41,5 +42,12 @@ public class Mayor extends Actionable implements GoodGuys {
                 System.out.println("not valid input\nplease try again :");
             }
         }
+
+        try {
+            getObjectOutputStream().writeObject(actionCommand);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

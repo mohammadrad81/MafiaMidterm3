@@ -38,6 +38,7 @@ public class Professional extends Actionable implements GoodGuys {
 
             input = scanner.nextInt();
             if(input == 0){
+                System.out.println("you shoot nobody tonight .");
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
                         new PlayerAction(PlayersActionTypes.professionalShoots ,
                                 null));
@@ -45,6 +46,7 @@ public class Professional extends Actionable implements GoodGuys {
             }
 
             else if(input > 0 && input <= othersNames.size()){
+                System.out.println("you shoot player : " + othersNames.get(input - 1));
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
                         new PlayerAction(PlayersActionTypes.professionalShoots ,
                         othersNames.get(input - 1)));
@@ -53,7 +55,6 @@ public class Professional extends Actionable implements GoodGuys {
             else {
                 System.out.println("not valid input\n please try again :");
             }
-
         }
 
         try {
