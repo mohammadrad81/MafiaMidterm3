@@ -410,8 +410,8 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     private void printMessage(Message message){
-        System.out.println(message.getSenderName() + ": ");
-        System.out.println(message.getMessageText());
+        System.out.println(message.getSenderName() + ": "+ message.getMessageText() + "\n");
+
     }
 
     private void die(Command command){

@@ -343,7 +343,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             voteDescription = "voting : " + vote.getVoterName() + " voted nobody" ;
         }
         else {
-            voteDescription = "voting : " + vote.getVoterName() + "voted player : " + vote.getSuspectName();
+            voteDescription = "voting : " + vote.getVoterName() + " voted player : " + vote.getSuspectName();
         }
 
         Command someOneVoted = new Command(CommandTypes.serverToClientString , voteDescription);
