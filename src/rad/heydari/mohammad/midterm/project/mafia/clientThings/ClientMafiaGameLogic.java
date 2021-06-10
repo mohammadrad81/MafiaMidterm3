@@ -108,6 +108,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         else if(command.getType() == CommandTypes.endOfTheGame){
             endOfTheGame(command);
         }
+        else if(command.getType() == CommandTypes.youAreMutedForTomorrow){
+            isMuted = true;
+        }
+
 
 
     }

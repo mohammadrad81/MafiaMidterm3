@@ -691,6 +691,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         if(nightEvents.isShowDeadRoles()) {
             revealDeadRoles();
         }
+
+        if(nightEvents.getMutedOne() != null){
+            muteTheMutedOne(nightEvents.getMutedOne());
+        }
     }
 
     private void day(){
@@ -1417,5 +1421,14 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
         return aliveBadGuys;
+    }
+
+    private void muteTheMutedOne(ServerSidePlayerDetails mutedPlayer){
+        Command muteCommand = new Command(CommandTypes.youAreMutedForTomorrow , null);
+        try {
+            mutedPlayer.sendCommandToPlayer(muteCommand);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
