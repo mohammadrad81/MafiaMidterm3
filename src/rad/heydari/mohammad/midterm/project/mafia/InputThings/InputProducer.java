@@ -6,16 +6,17 @@ public class InputProducer {
 
     private ArrayList<String> inputs = null;
     private LoopedTillRightInput loopedTillRightInput;
-    public InputProducer(){
+    private boolean takeInput = true;
+    public InputProducer(LoopedTillRightInput loopedTillRightInput){
         inputs = new ArrayList<>();
-        loopedTillRightInput = new LoopedTillRightInput();
+        this.loopedTillRightInput = loopedTillRightInput;
     }
 
     public void startTakingInputs(){
-
-        String input = loopedTillRightInput.stringInput();
-        storeInput(input);
-
+        while (takeInput){
+            String input = loopedTillRightInput.stringInput();
+            storeInput(input);
+        }
     }
 
     private void storeInput(String input){
@@ -49,5 +50,9 @@ public class InputProducer {
         synchronized (inputs){
             inputs = new ArrayList<>();
         }
+    }
+
+    public void stopTakingInput(){
+        takeInput = false;
     }
 }

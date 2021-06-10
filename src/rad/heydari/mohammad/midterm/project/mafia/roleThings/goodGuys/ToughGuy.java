@@ -1,5 +1,6 @@
 package rad.heydari.mohammad.midterm.project.mafia.roleThings.goodGuys;
 
+import rad.heydari.mohammad.midterm.project.mafia.InputThings.InputProducer;
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.CommandTypes;
@@ -14,20 +15,41 @@ import java.io.ObjectOutputStream;
 
 public class ToughGuy extends Actionable implements GoodGuys {
     private int askedToShowDeadRoles;
-    private LoopedTillRightInput loopedTillRightInput;
-    public ToughGuy(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream , String userName) {
-        super(objectInputStream, objectOutputStream , "tough guy" , userName);
-        this.loopedTillRightInput = new LoopedTillRightInput();
+//    private LoopedTillRightInput loopedTillRightInput;
+    public ToughGuy(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream , String userName , InputProducer inputProducer) {
+        super(objectInputStream, objectOutputStream , "tough guy" , userName , inputProducer);
+//        this.loopedTillRightInput = new LoopedTillRightInput();
     }
 
     @Override
     public void action(Command command) {
+        startNow();
         boolean correctlyDone = false;
         boolean wantsToReveal = false;
+        char input = 'n';
         while (! correctlyDone){
+
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
+
             if(askedToShowDeadRoles < 2){
                 System.out.println("do you want to ask to reveal the dead one roles ?(y/n) :");
-                char input = loopedTillRightInput.stringInput().charAt(0);
+
+                while (! isTimeOver(getTimeLimit())){
+                    if(getInputProducer().hasNext()){
+                        input = getInputProducer().consumeInput().charAt(0);
+                        break;
+                    }
+                    else {
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
                 if(input == 'y'){
                     System.out.println("ok , after night the dead ones roles will be revealed");
                     wantsToReveal = true;
@@ -50,6 +72,13 @@ public class ToughGuy extends Actionable implements GoodGuys {
                 wantsToReveal = false;
                 correctlyDone = true;
             }
+        }
+
+        if(! correctlyDone){
+            System.out.println("time out , you didn't choose ," +
+                    " so by default ," +
+                    " the dead roles will not be revealed .");
+                wantsToReveal = false;
         }
 
         if(wantsToReveal){

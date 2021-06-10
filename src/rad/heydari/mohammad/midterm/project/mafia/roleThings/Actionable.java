@@ -1,5 +1,6 @@
 package rad.heydari.mohammad.midterm.project.mafia.roleThings;
 
+import rad.heydari.mohammad.midterm.project.mafia.InputThings.InputProducer;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 
 import java.io.ObjectInputStream;
@@ -11,15 +12,21 @@ public abstract class Actionable implements Role {
     private String roleNameString;
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
+    private InputProducer inputProducer;
+    private long startSecond;
+    private long timeLimit = 200;
+
 
     public Actionable(ObjectInputStream objectInputStream ,
                       ObjectOutputStream objectOutputStream ,
                       String roleNameString,
-                      String userName){
+                      String userName,
+                    InputProducer inputProducer){
         this.objectInputStream = objectInputStream;
         this.objectOutputStream = objectOutputStream;
         this.roleNameString = roleNameString;
         this.userName = userName;
+        this.inputProducer = inputProducer;
     }
 
     public abstract void action(Command command);
@@ -47,4 +54,27 @@ public abstract class Actionable implements Role {
             System.out.println(i + "- " +names.get(i-1));
         }
     }
+
+    public InputProducer getInputProducer() {
+        return inputProducer;
+    }
+
+    public void startNow(){
+        startSecond = java.time.Instant.now().getEpochSecond();
+    }
+
+    public boolean isTimeOver(long timeLimit){
+        long nowSecond = java.time.Instant.now().getEpochSecond();
+        if(nowSecond >= startSecond + timeLimit){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public long getTimeLimit() {
+        return timeLimit;
+    }
+
 }

@@ -1,5 +1,6 @@
 package rad.heydari.mohammad.midterm.project.mafia.roleThings.goodGuys;
 
+import rad.heydari.mohammad.midterm.project.mafia.InputThings.InputProducer;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.GoodGuys;
 
 import java.io.ObjectInputStream;
@@ -9,7 +10,7 @@ public class NormalCitizen implements GoodGuys {
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
     private String roleNameString;
-    public NormalCitizen(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream ) {
+    public NormalCitizen(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) {
         this.objectInputStream = objectInputStream;
         this.objectOutputStream = objectOutputStream;
         this.roleNameString = "normal citizen";

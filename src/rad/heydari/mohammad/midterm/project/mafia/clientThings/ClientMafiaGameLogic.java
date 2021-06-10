@@ -1,10 +1,12 @@
 package rad.heydari.mohammad.midterm.project.mafia.clientThings;
 
+import rad.heydari.mohammad.midterm.project.mafia.InputThings.InputProducer;
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
 import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.NoUserFileUtilException;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableActionDoer;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientMessageSender;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientVote;
+import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableInputTaker;
 import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.CommandTypes;
@@ -40,6 +42,8 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     private  ObjectOutputStream objectOutputStream;
     private  ObjectInputStream objectInputStream;
     private  Socket socket;
+    private RunnableInputTaker runnableInputTaker;
+    private InputProducer inputProducer;
 
 //    private Scanner scanner;
 
@@ -54,6 +58,8 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         this.objectOutputStream = objectOutputStream;
         this.loopedTillRightInput = new LoopedTillRightInput();
 //        this.scanner = new Scanner(System.in);
+        this.inputProducer = new InputProducer(loopedTillRightInput);
+        this.runnableInputTaker = new RunnableInputTaker(inputProducer);
     }
 
     public void play(){
@@ -88,18 +94,28 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             takeYourRole(command);
         }
         else if(command.getType() == CommandTypes.chatRoomStarted){
+            synchronized (inputProducer){
+                inputProducer.clearInputs();
+            }
             chat();
         }
         else if(command.getType() == CommandTypes.vote){
+            synchronized (inputProducer){
+                inputProducer.clearInputs();
+            }
             vote(command);
         }
         else if(command.getType() == CommandTypes.doYourAction){
+            synchronized (inputProducer){
+                inputProducer.clearInputs();
+            }
             doYourAction(command);
         }
         else if(command.getType() == CommandTypes.serverToClientString){
             printServerToClientString(command);
         }
         else if(command.getType() == CommandTypes.waitingForClientToGetReady){
+            inputProducer.clearInputs();
             getReady();
         }
         else if(command.getType() == CommandTypes.youAreDead){
@@ -111,9 +127,6 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         else if(command.getType() == CommandTypes.youAreMutedForTomorrow){
             isMuted = true;
         }
-
-
-
     }
 
     public void chat(){
@@ -132,7 +145,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                         "(if you enter \"ready\" you can only receive messages, no more sending ):");
 
                 executorService = Executors.newCachedThreadPool();
-                future = executorService.submit(new RunnableClientMessageSender(userName , objectOutputStream));
+                future = executorService.submit(new RunnableClientMessageSender(userName , objectOutputStream , inputProducer));
             }
 
         }
@@ -194,7 +207,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             ArrayList<String> playersNames =(ArrayList<String>) command.getCommandNeededThings();
             playersNames.remove(userName);
              executorService = Executors.newCachedThreadPool();
-             future = executorService.submit(new Thread(new RunnableClientVote(userName , playersNames , objectOutputStream)));
+             future = executorService.submit(new Thread(new RunnableClientVote(userName , playersNames , objectOutputStream , inputProducer)));
             executorService.shutdown();
         }
 
@@ -332,34 +345,34 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     public Role generateRole(RoleNames roleName , ObjectOutputStream objectOutputStream , ObjectInputStream objectInputStream){
         if(roleName == RoleNames.godFather){
-            return new GodFather(objectInputStream , objectOutputStream , userName);
+            return new GodFather(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else if(roleName == RoleNames.doctorLector){
-            return new DoctorLector(objectInputStream , objectOutputStream ,userName);
+            return new DoctorLector(objectInputStream , objectOutputStream ,userName , inputProducer);
         }
         else if(roleName == RoleNames.detective){
-            return new Detective(objectInputStream , objectOutputStream, userName);
+            return new Detective(objectInputStream , objectOutputStream, userName , inputProducer);
         }
         else if(roleName ==  RoleNames.mafia){
-            return new Mafia(objectInputStream , objectOutputStream , userName);
+            return new Mafia(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else if(roleName == RoleNames.mayor){
-            return new Mayor(objectInputStream , objectOutputStream , userName);
+            return new Mayor(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else if(roleName == RoleNames.normalCitizen){
             return new NormalCitizen(objectInputStream , objectOutputStream);
         }
         else if(roleName == RoleNames.professional){
-            return new Professional(objectInputStream , objectOutputStream , userName);
+            return new Professional(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else if(roleName == RoleNames.therapist){
-            return new Therapist(objectInputStream , objectOutputStream , userName);
+            return new Therapist(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else if(roleName == RoleNames.toughGuy){
-            return new ToughGuy(objectInputStream , objectOutputStream , userName);
+            return new ToughGuy(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else if(roleName == RoleNames.townDoctor){
-            return new TownDoctor(objectInputStream , objectOutputStream , userName);
+            return new TownDoctor(objectInputStream , objectOutputStream , userName , inputProducer);
         }
         else{
             return null;
