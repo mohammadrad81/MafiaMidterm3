@@ -11,6 +11,11 @@ public class PlayerAction implements Serializable {
         this.PlayerActionType = PlayerActionType;
         this.nameOfThePlayerActionHappensTo = nameOfThePlayerActionHappensTo;
     }
+
+    public PlayerAction(PlayersActionTypes playerActionType){
+        this.PlayerActionType = playerActionType;
+    }
+
     public PlayerAction(PlayersActionTypes playerActionType ,
                         String nameOfThePlayerActionHappensTo ,
                         String actionDoerName){

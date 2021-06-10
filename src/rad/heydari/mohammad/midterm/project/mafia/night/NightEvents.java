@@ -49,6 +49,9 @@ public class NightEvents {
     }
 
     public void professionalShoots(ServerSidePlayerDetails professionalVictim){
+        if(professionalVictim == null){
+            professionalDidWrongShoot = false;
+        }
         if(RoleNames.isEvil(professionalVictim.getRoleName())){
             professionalShoots = professionalVictim;
             professionalDidWrongShoot = false;

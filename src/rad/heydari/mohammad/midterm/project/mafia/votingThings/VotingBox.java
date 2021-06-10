@@ -26,7 +26,7 @@ public class VotingBox {
             playerCountOfVotesHashMap.put(suspect , playerCountOfVotesHashMap.get(suspect) + 1);
         }
         else {
-            playerCountOfVotesHashMap.put(suspect , 1 );
+            playerCountOfVotesHashMap.put(suspect , 1);
         }
     }
 

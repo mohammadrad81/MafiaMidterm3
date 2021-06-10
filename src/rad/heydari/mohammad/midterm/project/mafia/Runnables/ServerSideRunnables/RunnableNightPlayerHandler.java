@@ -7,7 +7,7 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.God;
 import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerDetails;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
+
 
 public class RunnableNightPlayerHandler implements Runnable{
 
@@ -22,18 +22,13 @@ public class RunnableNightPlayerHandler implements Runnable{
     public void run() {
         Command command = null;
         Demand demand = null;
-        while (true){
+//        while (true){
             try {
                 command = player.receivePlayerRespond();
                 God.doTheCommand(command);
-
-                if(command.getType() == CommandTypes.iDoMyAction){
-                    break;
-                }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+//        }
     }
 }

@@ -2,6 +2,7 @@ package rad.heydari.mohammad.midterm.project.mafia.clientThings;
 
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
 import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.NoUserFileUtilException;
+import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableActionDoer;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientMessageSender;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientVote;
 import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
@@ -231,11 +232,13 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     public void doYourAction(Command command){
+        ExecutorService executorService = Executors.newCachedThreadPool();
         if(isAlive){
             if (role instanceof Actionable){
-                Actionable actionable = (Actionable) role;
-                actionable.action(command);
+                executorService.execute(new RunnableActionDoer((Actionable) role , command));
+                executorService.shutdown();
             }
+
             else {
                 System.out.println("waiting for other players ...");
             }

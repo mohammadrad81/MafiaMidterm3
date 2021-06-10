@@ -29,12 +29,13 @@ public class Mayor extends Actionable implements GoodGuys {
 
             input = scanner.nextLine().charAt(0);
             if(input == 'n'){
-                System.out.println("ok , you , the mayor cancel the voting .");
+                System.out.println("ok , you don't cancel the voting .");
+
                 actionCommand = new Command(CommandTypes.mayorSaysLynch , null);
                 correctlyDone = true;
             }
             else if(input == 'y'){
-                System.out.println("ok , you don't cancel the voting .");
+                System.out.println("ok , you , the mayor cancel the voting .");
                 actionCommand = new Command(CommandTypes.mayorSaysDontLynch , null);
                 correctlyDone = true;
             }

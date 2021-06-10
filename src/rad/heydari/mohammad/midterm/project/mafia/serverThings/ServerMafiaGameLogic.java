@@ -828,16 +828,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                  finalResult = new Command(CommandTypes.serverToClientString , "the mayor canceled the lynch . ");
                  sendCommandToOnlineAndSpectatorPlayers(finalResult);
             }
-
-
-
-
-
-
         }
-
         votingBox.resetTheBox();
-
     }
 
     private void informAllPlayersItsVotingTime(){
@@ -1069,7 +1061,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         while (iterator.hasNext()){
             player = iterator.next();
-            executorService.execute(new RunnableNightPlayerHandler(player));
+            if(player.getRoleName() != RoleNames.normalCitizen && player.getRoleName() != RoleNames.mayor){
+                executorService.execute(new RunnableNightPlayerHandler(player));
+            }
         }
 
         executorService.shutdown();
@@ -1151,8 +1145,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 }
 
                 try {
-                    detective.sendCommandToPlayer(new Command(CommandTypes.serverToClientString,
-                            "player : " + RoleNames.getRoleAsString(detectedPlayer.getRoleName())));
+                    detective.sendCommandToPlayer(detectionResult);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -1247,7 +1240,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             mafiaChoiceNotifyCommand =
                     new Command(CommandTypes.serverToClientString ,
                             mafiaChoice.getActionDoerName() + " thinks we better kill " +
-                                    mafiaChoice +
+                                    mafiaChoice.getNameOfThePlayerActionHappensTo() +
                                     " tonight.");
         }
         sendCommandToAliveBadGuys(mafiaChoiceNotifyCommand);
