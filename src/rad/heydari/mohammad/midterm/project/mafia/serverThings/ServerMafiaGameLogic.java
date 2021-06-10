@@ -9,11 +9,13 @@ import rad.heydari.mohammad.midterm.project.mafia.gameThings.ServerSideGame;
 import rad.heydari.mohammad.midterm.project.mafia.night.PlayerAction;
 import rad.heydari.mohammad.midterm.project.mafia.night.PlayersActionTypes;
 import rad.heydari.mohammad.midterm.project.mafia.night.NightEvents;
+import rad.heydari.mohammad.midterm.project.mafia.roleThings.Role;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.RoleNames;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -903,6 +905,21 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    private ArrayList<String> getAliveGoodGuysNames(){
+        ArrayList<String> aliveGoodGuysNames = new ArrayList<>();
+        Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails playerDetails = null;
+        synchronized (alivePlayers){
+            while (playerIterator.hasNext()){
+                playerDetails = playerIterator.next();
+                if(! RoleNames.isEvil(playerDetails.getRoleName())){
+                    aliveGoodGuysNames.add(playerDetails.getUserName());
+                }
+            }
+        }
+        return aliveGoodGuysNames;
+    }
+
     public void sendMessageToAll(Message message){
         // sending to alive players :
 
@@ -1019,10 +1036,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.itIsNight , null));
 
         Command informWithAllOnlinePlayersNames = new Command(CommandTypes.doYourAction , getAlivePlayersUserNames());
+        Command informWithGoodGuyPlayersNames = new Command(CommandTypes.doYourAction , getAliveGoodGuysNames());
         Command informWithBadGuyPlayersNames = new Command(CommandTypes.doYourAction  , getAliveBadGuysNames());
 
-        sendCommandToEveryOneExceptAliveMayorAndLector(informWithAllOnlinePlayersNames);
-
+        sendCommandToEveryGoodGuysExceptMayor(informWithAllOnlinePlayersNames);
+        sendCommandToEveryBadGuysExceptLector(informWithGoodGuyPlayersNames);
         ServerSidePlayerDetails doctorLectorPlayer = findSpecificAliveRolePlayer(RoleNames.doctorLector);
 
         if (doctorLectorPlayer != null){
@@ -1035,7 +1053,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
-    private void sendCommandToEveryOneExceptAliveMayorAndLector(Command command){
+    private void sendCommandToEveryGoodGuysExceptMayor(Command command){
 
         sendCommandToSpectators(command);
         Iterator<ServerSidePlayerDetails> alivePlayersIterator = alivePlayers.iterator();
@@ -1043,7 +1061,23 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         while (alivePlayersIterator.hasNext()){
             player = alivePlayersIterator.next();
 
-            if(player.getRoleName() != RoleNames.mayor && player.getRoleName() != RoleNames.doctorLector){
+            if(player.getRoleName() != RoleNames.mayor && !RoleNames.isEvil(player.getRoleName())){
+                try {
+                    player.sendCommandToPlayer(command);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void sendCommandToEveryBadGuysExceptLector(Command command){
+        Iterator<ServerSidePlayerDetails> alivePlayersIterator = alivePlayers.iterator();
+        ServerSidePlayerDetails player = null;
+        while (alivePlayersIterator.hasNext()){
+            player = alivePlayersIterator.next();
+
+            if(player.getRoleName() != RoleNames.doctorLector && RoleNames.isEvil(player.getRoleName())){
                 try {
                     player.sendCommandToPlayer(command);
                 } catch (IOException e) {
@@ -1133,14 +1167,14 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 if(RoleNames.isEvil(detectedPlayer.getRoleName()) && detectedPlayer.getRoleName() != RoleNames.godFather){
                     detectionResult = new Command(CommandTypes.serverToClientString ,
                             "the player : " +
-                                    detectedPlayer +
+                                    detectedPlayer.getUserName() +
                             " is evil ( bad guy ).");
                 }
 
                 else {
                     detectionResult = new Command(CommandTypes.serverToClientString ,
                             "the player : " +
-                                    detectedPlayer +
+                                    detectedPlayer.getUserName() +
                             " is not evil ( he is a good guy ) .");
                 }
 
