@@ -63,6 +63,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
     }
 
     public void play(){
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(runnableInputTaker);
+        executorService.shutdown();
         while (true){
             try {
                 doTheCommand((Command) objectInputStream.readObject());
@@ -285,7 +288,12 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                 "( exit is not valid , if you enter that , you leave the game ) :" );
         while (true){
             try {
-                testingUserName = loopedTillRightInput.stringInput().trim();
+
+                while (!inputProducer.hasNext()){
+                    Thread.sleep(200);
+                }
+
+                testingUserName = inputProducer.consumeInput();
 
                 if(testingUserName.equals("exit")){
                     playerExitsTheGame();
@@ -308,6 +316,8 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                 System.out.println("connection lost");
                 e.printStackTrace();
                 playerExitsTheGame();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -389,7 +399,18 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         String input = "";
 
         do {
-            input = loopedTillRightInput.stringInput().trim();
+
+            while (! inputProducer.hasNext()){
+
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            input = inputProducer.consumeInput();
 
             if(input.equals("exit")){
                 playerExitsTheGame();

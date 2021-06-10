@@ -67,14 +67,24 @@ public class RunnableClientVote implements Runnable{
 
             if(input == 0){
                 voteCommand = new Command(CommandTypes.iVote , new Vote(voterName , null));
+                correctlyDone = true;
             }
 
-            else{
+            else if (input > 0 && input <= otherPlayersNames.size()){
                 String suspectName = otherPlayersNames.get(input - 1);
                 voteCommand = new Command(CommandTypes.iVote , new Vote(voterName , suspectName));
+                correctlyDone = true;
+            }
+            else {
+                System.out.println("input is not in the valid range , please try again .");
+                correctlyDone = false;
             }
 
         }while (!correctlyDone && !isTimeOver(timeLimit));
+
+        if(! correctlyDone){
+            voteCommand = new Command(CommandTypes.iVote , new Vote(voterName , null));
+        }
 
         try {
             objectOutputStream.writeObject(voteCommand);

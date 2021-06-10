@@ -9,13 +9,11 @@ import rad.heydari.mohammad.midterm.project.mafia.gameThings.ServerSideGame;
 import rad.heydari.mohammad.midterm.project.mafia.night.PlayerAction;
 import rad.heydari.mohammad.midterm.project.mafia.night.PlayersActionTypes;
 import rad.heydari.mohammad.midterm.project.mafia.night.NightEvents;
-import rad.heydari.mohammad.midterm.project.mafia.roleThings.Role;
 import rad.heydari.mohammad.midterm.project.mafia.roleThings.RoleNames;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -318,13 +316,13 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.townDoctorSave){
                 if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
-                        nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                        nightEvents.townDoctorSave(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                     }
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.doctorLectorSave){
                 notifyAliveBadGuysTheDoctorLectorChoice(playerAction.getNameOfThePlayerActionHappensTo());
-                nightEvents.save(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                nightEvents.lectorSave(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.toughGuySaysShowDeadRoles){
                 synchronized (nightEvents){

@@ -27,7 +27,7 @@ public class InputProducer {
 
     public boolean hasNext(){
         synchronized (inputs){
-            if(inputs.get(0) != null){
+            if(inputs.size() > 0){
                 return true;
             }
             return false;
@@ -40,7 +40,6 @@ public class InputProducer {
             synchronized (inputs){
                 consumingString = inputs.get(0);
                 inputs.remove(0);
-
             }
         }
         return consumingString;

@@ -39,7 +39,7 @@ public class Detective extends Actionable {
             System.out.println("choose someOne to know he is evil or not : ");
             printStringArrayList(othersNames);
 
-            while (isTimeOver(getTimeLimit())){
+            while (! isTimeOver(getTimeLimit())){
                 if(getInputProducer().hasNext()){
                     try {
                         input = Integer.parseInt(getInputProducer().consumeInput());
