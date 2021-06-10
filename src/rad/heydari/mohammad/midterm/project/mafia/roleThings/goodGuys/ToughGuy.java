@@ -32,6 +32,7 @@ public class ToughGuy extends Actionable implements GoodGuys {
                     System.out.println("ok , after night the dead ones roles will be revealed");
                     wantsToReveal = true;
                     correctlyDone = true;
+                    askedToShowDeadRoles ++;
                 }
                 else if(input == 'n'){
                     System.out.println("ok , not tonight");
@@ -46,6 +47,7 @@ public class ToughGuy extends Actionable implements GoodGuys {
 
             else {
                 System.out.println("you already have used your chances , you revealed twice before");
+                wantsToReveal = false;
                 correctlyDone = true;
             }
         }
@@ -53,7 +55,7 @@ public class ToughGuy extends Actionable implements GoodGuys {
         if(wantsToReveal){
             try {
                 getObjectOutputStream().writeObject(new Command(CommandTypes.iDoMyAction ,
-                        new PlayerAction(null ,
+                        new PlayerAction(PlayersActionTypes.toughGuySaysShowDeadRoles,
                                 null)));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -62,7 +64,7 @@ public class ToughGuy extends Actionable implements GoodGuys {
         else {
             try {
                 getObjectOutputStream().writeObject(new Command(CommandTypes.iDoMyAction ,
-                        new PlayerAction(PlayersActionTypes.toughGuySaysShowDeadRoles ,
+                        new PlayerAction(null ,
                                 null)));
             } catch (IOException e) {
                 e.printStackTrace();

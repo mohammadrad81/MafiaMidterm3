@@ -62,11 +62,10 @@ public class NightEvents {
     }
 
     public void toughGuySaysShowDeadRoles(){
-
         if(howManyTimesShowedDeadOnes < 2){
             showDeadRoles = true;
+            howManyTimesShowedDeadOnes++;
         }
-
     }
 
     public ArrayList<ServerSidePlayerDetails> getThoseWhoDieTonight(){
