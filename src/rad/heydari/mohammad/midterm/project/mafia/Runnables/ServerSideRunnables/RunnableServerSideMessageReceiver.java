@@ -37,12 +37,6 @@ public class RunnableServerSideMessageReceiver implements Runnable{
                 God.removeOfflinePlayerNotifyOthers(player);
                 break;
             }
-
-
-
         }
-
     }
-
-
 }

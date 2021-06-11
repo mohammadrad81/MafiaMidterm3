@@ -27,7 +27,12 @@ public class LoopedTillRightInput {
             System.exit(0);
         }
         else if(input.equals("HISTORY")){
-            printAllMessages();
+            try {
+                printAllMessages();
+            }catch (NoUserFileUtilException e){
+                System.err.println("! there is no history yet !");
+            }
+
             input = stringInput();
         }
         return input;
@@ -81,11 +86,7 @@ public class LoopedTillRightInput {
 
     public void printAllMessages(){
         if (fileUtils == null){
-            try {
                 throw new NoUserFileUtilException("this input taker has no file util (no username is set for it).");
-            } catch (NoUserFileUtilException e) {
-                e.printStackTrace();
-            }
         }
         else {
             synchronized (fileUtils){

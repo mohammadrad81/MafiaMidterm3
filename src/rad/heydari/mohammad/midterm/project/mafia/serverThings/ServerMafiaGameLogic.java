@@ -140,7 +140,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         executorService.shutdown();
         try {
-            executorService.awaitTermination(5 , TimeUnit.MINUTES);
+            executorService.awaitTermination(1 , TimeUnit.DAYS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -649,6 +649,20 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 removeOfflinePlayerNotifyOthers(messageReceiver); // if the message receiver is offline too
             }
         }
+
+        iterator = spectators.iterator();
+
+        while (iterator.hasNext()){
+            ServerSidePlayerDetails messageReceiver = iterator.next();
+            try {
+                messageReceiver.sendCommandToPlayer(new Command(CommandTypes.serverToClientString ,
+                        " the player : " + offlinePlayer.getUserName()  + " left the game ! "));
+            } catch (IOException e) {
+//                e.printStackTrace();
+                removeSpectatorToOfflineDeadOnes(messageReceiver);
+            }
+        }
+
     }
 
     private boolean isGameOver(){
@@ -767,7 +781,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         executorService.shutdown();
 
         try {
-            executorService.awaitTermination(5, TimeUnit.MINUTES);
+            executorService.awaitTermination(6, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -1064,6 +1078,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 player.sendCommandToPlayer(command);
             } catch (IOException e) {
 //                e.printStackTrace();
+
                 removeOfflinePlayerNotifyOthers(player);
             }
 
@@ -1526,5 +1541,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 removeOfflinePlayerNotifyOthers(professional);
             }
         }
+    }
+
+    private void removeSpectatorToOfflineDeadOnes(ServerSidePlayerDetails player){
+        spectators.remove(player);
+        offlineDeadOnes.add(player);
     }
 }

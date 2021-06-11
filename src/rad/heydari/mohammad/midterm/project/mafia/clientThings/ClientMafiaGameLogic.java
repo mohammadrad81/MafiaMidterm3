@@ -175,7 +175,6 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
             else if(command.getType() != CommandTypes.chatRoomIsClosed){ // just in case :
                 doTheCommand(command);
-                break;
             }
 
         }while (command.getType() != CommandTypes.chatRoomIsClosed);
