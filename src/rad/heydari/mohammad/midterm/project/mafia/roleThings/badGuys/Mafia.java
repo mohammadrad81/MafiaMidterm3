@@ -47,6 +47,7 @@ public class Mafia extends Actionable implements BadGuys {
                 if(getInputProducer().hasNext()){
                     try {
                         input = Integer.parseInt(getInputProducer().consumeInput());
+                        break;
                     }catch (NumberFormatException e){
                         System.out.println("your input is not a number , please try again .");
                     }
