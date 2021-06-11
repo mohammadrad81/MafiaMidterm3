@@ -94,24 +94,6 @@ public class TownDoctor extends Actionable implements GoodGuys {
                 System.out.println("wrong input , please try again");
                 correctlyDone = false;
             }
-//            else {
-//                if (savablePlayersNames.get(input - 1).equals(getUserName())) {
-//                    System.out.println("you save " + savablePlayersNames.get(input - 1) + " ( yourself ) .");
-//                    hasSavedHisSelf = true;
-//                    saveCommand = new Command(CommandTypes.iDoMyAction, new PlayerAction(PlayersActionTypes.townDoctorSave, getUserName()));
-//                    correctlyDone = true;
-//                }
-//                else if(input >0 &&  input <= savablePlayersNames.size()) {
-//                    System.out.println("you save player : " + savablePlayersNames.get(input - 1) + " tonight .");
-//                    saveCommand = new Command(CommandTypes.iDoMyAction,
-//                            new PlayerAction(PlayersActionTypes.townDoctorSave,
-//                                    savablePlayersNames.get(input - 1)));
-//                    correctlyDone = true;
-//                }
-//                else {
-//                    System.out.println("wrong input , please try again");
-//                }
-//            }
         }
 
         if (! correctlyDone){

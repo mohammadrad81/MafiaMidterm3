@@ -111,7 +111,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             endOfTheGame += player.getUserName() + " was : " + RoleNames.getRoleAsString(player.getRoleName()) + "\n";
         }
 
-        endOfTheGame += "LOSERS : ";
+        endOfTheGame += "LOSERS : \n";
 
         for(ServerSidePlayerDetails player : losersArrayList){
             endOfTheGame += player.getUserName() + " was : " + RoleNames.getRoleAsString(player.getRoleName()) + "\n";
@@ -159,8 +159,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.godFather);
                     player.setRoleName(RoleNames.godFather);
+
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -170,8 +173,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.townDoctor);
                     player.setRoleName(RoleNames.townDoctor);
+
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -181,8 +187,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.detective);
                     player.setRoleName(RoleNames.detective);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -192,8 +200,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.professional);
                     player.setRoleName(RoleNames.professional);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -202,8 +212,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.therapist);
                     player.setRoleName(RoleNames.therapist);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -212,8 +224,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.doctorLector);
                     player.setRoleName(RoleNames.doctorLector);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                    continue;
                 }
@@ -222,8 +236,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.mayor);
                     player.setRoleName(RoleNames.mayor);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -232,8 +248,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.toughGuy);
                     player.setRoleName(RoleNames.toughGuy);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -242,8 +260,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.mafia);
                     player.setRoleName(RoleNames.mafia);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
@@ -252,16 +272,15 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendTheRoleToThePlayer(RoleNames.normalCitizen);
                     player.setRoleName(RoleNames.normalCitizen);
+                    System.out.println(player.getUserName() + " role is : " + RoleNames.getRoleAsString(player.getRoleName()));
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(player);
                     continue;
                 }
             }
-
             counter ++;
         }
-
     }
 
     private void shuffleThePlayers(){
@@ -419,7 +438,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     serverSidePlayerDetails.sendCommandToPlayer(mafiaIntroductionCommand);
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    removeOfflinePlayerNotifyOthers(serverSidePlayerDetails);
                 }
             }
 
@@ -431,23 +451,13 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     private void townDoctorAndMayorIntroduction(){
 
-//        String mayorToDoctorIntroduction;
-//        ServerSidePlayerDetails doctor = findSpecificAliveRolePlayer(RoleNames.townDoctor);
         ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
-
-//        if(doctor != null){
-//            try {
-//                doctor.sendCommandToPlayer(new Command(CommandTypes.serverToClientString , getMayorToDoctorIntroduction()));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
 
         if(mayor != null){
             try {
                 mayor.sendCommandToPlayer(new Command(CommandTypes.serverToClientString , getDoctorToMayorIntroduction()));
             } catch (IOException e) {
-                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(mayor);
             }
         }
 
@@ -569,7 +579,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     }
 
     public void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
-
+        System.err.println("! player " + removingPlayer.getUserName() + " is disconnected !") ;
         notifyOthersThePlayerGotOffline(removingPlayer);
 
 
@@ -589,7 +599,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 messageReceiver.sendCommandToPlayer(new Command(CommandTypes.serverToClientString ,
                                         " the player : " + offlinePlayer.getUserName()  + " left the game ! "));
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
                 removeOfflinePlayerNotifyOthers(messageReceiver); // if the message receiver is offline too
             }
         }
@@ -755,7 +765,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 player.sendCommandToPlayer(chattingTimeCommand);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(player);
             }
 
         }
@@ -825,7 +836,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     mostVotedPlayer.sendCommandToPlayer(new Command(CommandTypes.youAreDead , " you are lynched "));
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    removeOfflinePlayerNotifyOthers(mostVotedPlayer);
                 }
 
                 removePlayerFromOnlinePlayersToSpectators(mostVotedPlayer);
@@ -860,14 +872,18 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 mayor.sendCommandToPlayer(new Command(CommandTypes.doYourAction , null));
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(mayor);
             }
+
             try {
                 mayorRespond = mayor.receivePlayerRespond();
 
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(mayor);
             }
+
             if(mayorRespond.getType() == CommandTypes.mayorSaysLynch){
                 return true;//lynch
             }
@@ -938,7 +954,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 player.sendCommandToPlayer(command);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(player);
             }
 
         }
@@ -952,7 +969,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 player.sendCommandToPlayer(command);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(player);
             }
 
         }
@@ -999,7 +1017,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 player.sendCommandToPlayer(command);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(player);
             }
 
         }
@@ -1019,7 +1038,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 player.sendCommandToPlayer(command);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(player);
             }
         }
     }
@@ -1052,7 +1072,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 doctorLectorPlayer.sendCommandToPlayer(informWithBadGuyPlayersNames);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(doctorLectorPlayer);
             }
         }
 
@@ -1070,7 +1091,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendCommandToPlayer(command);
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    removePlayerFromOnlinePlayersToSpectators(player);
                 }
             }
         }
@@ -1086,7 +1108,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     player.sendCommandToPlayer(command);
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    removeOfflinePlayerNotifyOthers(player);
                 }
             }
         }
@@ -1135,15 +1158,17 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                         try {
                             player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "you had wrong shoot"));
                         } catch (IOException e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            removeOfflinePlayerNotifyOthers(player);
                         }
                     }
                     else if(RoleNames.isEvil(player.getRoleName())) {
 
                         try {
-                            player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "professional shooted you"));
+                            player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "professional shot you"));
                         } catch (IOException e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            removePlayerFromOnlinePlayersToSpectators(player);
                         }
 
                     }
@@ -1151,7 +1176,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                         try {
                             player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "mafia killed you"));
                         } catch (IOException e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            removeOfflinePlayerNotifyOthers(player);
                         }
                     }
 
@@ -1186,7 +1212,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     detective.sendCommandToPlayer(detectionResult);
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    removeOfflinePlayerNotifyOthers(detectedPlayer);
                 }
             }
         }
@@ -1245,8 +1272,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 try {
                     playerDetails.sendCommandToPlayer(command);
                 } catch (IOException e) {
-                    e.printStackTrace();
+
+//                    e.printStackTrace();
+                    removeOfflinePlayerNotifyOthers(playerDetails);
                 }
+
             }
         }
     }
@@ -1389,7 +1419,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 aliveBadGuys.get(0).sendCommandToPlayer(youAreGodfatherCommand);
                 aliveBadGuys.get(0).setRoleName(RoleNames.godFather);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(aliveBadGuys.get(0));
             }
         }
 
@@ -1403,7 +1434,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                         player.setRoleName(RoleNames.godFather);
                         break;
                     } catch (IOException e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        removeOfflinePlayerNotifyOthers(player);
+                        godfatherSubstitution();
+                        return;
                     }
                 }
             }
@@ -1429,7 +1463,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         try {
             mutedPlayer.sendCommandToPlayer(muteCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            removeOfflinePlayerNotifyOthers(mutedPlayer);
         }
     }
 
@@ -1441,9 +1476,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 professional.sendCommandToPlayer(dieCommand);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                removeOfflinePlayerNotifyOthers(professional);
             }
         }
-
     }
 }
