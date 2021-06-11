@@ -24,7 +24,7 @@ public class RunnableWaitToGetReady implements Runnable{
         try {
             player.sendCommandToPlayer(new Command(CommandTypes.waitingForClientToGetReady , null));
         } catch (IOException e) {
-            e.printStackTrace();
+            God.removeOfflinePlayerNotifyOthers(player);
         }
 
         while (! gotReady){
