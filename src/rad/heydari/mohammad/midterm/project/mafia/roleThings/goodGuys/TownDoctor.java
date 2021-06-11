@@ -64,6 +64,9 @@ public class TownDoctor extends Actionable implements GoodGuys {
                 }
             }
 
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
             if (input == 0) {
                 System.out.println("you save nobody tonight .");
@@ -98,12 +101,16 @@ public class TownDoctor extends Actionable implements GoodGuys {
 
         if (! correctlyDone){
             System.out.println("time out , and you didn't choose , so you save nobody tonight .");
+            saveCommand = new Command(CommandTypes.iDoMyAction ,
+                    new PlayerAction(PlayersActionTypes.townDoctorSave ,
+                    null));
         }
 
         try {
             getObjectOutputStream().writeObject(saveCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
 
     }

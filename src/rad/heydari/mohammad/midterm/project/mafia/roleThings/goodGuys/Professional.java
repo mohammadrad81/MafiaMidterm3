@@ -60,7 +60,9 @@ public class Professional extends Actionable implements GoodGuys {
                     }
                 }
             }
-
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
             if(input == 0){
                 System.out.println("you shoot nobody tonight .");
@@ -92,7 +94,8 @@ public class Professional extends Actionable implements GoodGuys {
         try {
             getObjectOutputStream().writeObject(actionCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
 
     }

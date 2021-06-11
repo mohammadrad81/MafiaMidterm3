@@ -28,7 +28,7 @@ public class RunnableNightPlayerHandler implements Runnable{
                 if(command == null){
                     break;
                 }
-                else if(command.getType() == CommandTypes.iVote){
+                else if(command.getType() == CommandTypes.iDoMyAction){
                     God.doTheCommand(command);
                     break;
                 }

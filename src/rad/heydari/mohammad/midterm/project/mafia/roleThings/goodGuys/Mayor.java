@@ -47,7 +47,10 @@ public class Mayor extends Actionable implements GoodGuys {
                     }
                 }
             }
-//                input = scanner.nextLine().charAt(0);
+
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
 
             if(input == 'n'){
@@ -73,7 +76,8 @@ public class Mayor extends Actionable implements GoodGuys {
         try {
             getObjectOutputStream().writeObject(actionCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
 
     }

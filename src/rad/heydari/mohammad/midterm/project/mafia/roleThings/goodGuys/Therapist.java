@@ -38,7 +38,7 @@ public class Therapist extends Actionable implements GoodGuys {
             }
 
             System.out.println("choose somebody to mute tomorrow : ");
-            printNameArrayList(othersNames);
+            printStringArrayList(othersNames);
 
 
             while (! isTimeOver(getTimeLimit())){
@@ -59,6 +59,9 @@ public class Therapist extends Actionable implements GoodGuys {
                 }
             }
 
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
             if(input == 0){
                 System.out.println("you mute nobody today .");
@@ -85,15 +88,9 @@ public class Therapist extends Actionable implements GoodGuys {
         try {
             getObjectOutputStream().writeObject(actionCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
 
-    }
-
-    private void printNameArrayList(ArrayList<String> names){
-        System.out.println("0- no one");
-        for(int i = 1; i <= names.size(); i++){
-            System.out.println(i + "- " +names.get(i-1));
-        }
     }
 }

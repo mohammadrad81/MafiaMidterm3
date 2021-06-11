@@ -14,7 +14,7 @@ public abstract class Actionable implements Role {
     private ObjectInputStream objectInputStream;
     private InputProducer inputProducer;
     private long startSecond;
-    private long timeLimit = 200;
+    private long timeLimit = 210;
 
 
     public Actionable(ObjectInputStream objectInputStream ,

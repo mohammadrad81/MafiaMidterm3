@@ -56,7 +56,10 @@ public class Detective extends Actionable {
                     }
                 }
             }
-//            input = scanner.nextInt();
+
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
 
             if(input == 0){
@@ -89,7 +92,8 @@ public class Detective extends Actionable {
         try {
             getObjectOutputStream().writeObject(actionCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
 
     }

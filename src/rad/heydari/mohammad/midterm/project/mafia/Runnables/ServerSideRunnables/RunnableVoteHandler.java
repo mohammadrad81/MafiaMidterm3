@@ -26,6 +26,7 @@ public class RunnableVoteHandler implements Runnable{
                 if(command.getType() == CommandTypes.iVote){
                     hasVoted = true;
                     God.doTheCommand(command);
+                    break;
                 }
 
                 else{

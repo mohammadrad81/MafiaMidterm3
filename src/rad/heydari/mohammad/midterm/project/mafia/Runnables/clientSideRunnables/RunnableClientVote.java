@@ -27,7 +27,7 @@ public class RunnableClientVote implements Runnable{
 //        this.loopedTillRightInput = new LoopedTillRightInput();
 //        this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         this.inputProducer = inputProducer;
-        this.timeLimit = 120;
+        this.timeLimit = 60;
     }
 
 
@@ -64,6 +64,9 @@ public class RunnableClientVote implements Runnable{
                 }
             }
 
+            if(isTimeOver(timeLimit)){
+                break;
+            }
 
             if(input == 0){
                 voteCommand = new Command(CommandTypes.iVote , new Vote(voterName , null));

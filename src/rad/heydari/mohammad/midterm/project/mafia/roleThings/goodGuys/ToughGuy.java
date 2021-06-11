@@ -50,6 +50,10 @@ public class ToughGuy extends Actionable implements GoodGuys {
                     }
                 }
 
+                if(isTimeOver(getTimeLimit())){
+                    break;
+                }
+
                 if(input == 'y'){
                     System.out.println("ok , after night the dead ones roles will be revealed");
                     wantsToReveal = true;
@@ -87,7 +91,8 @@ public class ToughGuy extends Actionable implements GoodGuys {
                         new PlayerAction(PlayersActionTypes.toughGuySaysShowDeadRoles,
                                 null)));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("! you are disconnected from server !");
+                System.exit(0);
             }
         }
         else {
@@ -96,7 +101,8 @@ public class ToughGuy extends Actionable implements GoodGuys {
                         new PlayerAction(null ,
                                 null)));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("! you are disconnected from server !");
+                System.exit(0);
             }
         }
 

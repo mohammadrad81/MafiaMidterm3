@@ -58,7 +58,10 @@ public class GodFather extends Actionable implements GoodGuys {
                     }
                 }
             }
-//            input = scanner.nextInt();
+
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
             if (input == 0){
                 System.out.println("ok , kills nobody tonight .");
@@ -89,7 +92,8 @@ public class GodFather extends Actionable implements GoodGuys {
         try {
             getObjectOutputStream().writeObject(actionCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
     }
 }

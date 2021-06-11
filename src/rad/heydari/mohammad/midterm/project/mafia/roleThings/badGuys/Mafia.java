@@ -60,7 +60,10 @@ public class Mafia extends Actionable implements BadGuys {
                     }
                 }
             }
-//            input = scanner.nextInt();
+
+            if(isTimeOver(getTimeLimit())){
+                break;
+            }
 
             if(input == 0){
                 System.out.println("you have chosen no one to kill tonight");
@@ -92,7 +95,8 @@ public class Mafia extends Actionable implements BadGuys {
         try {
             getObjectOutputStream().writeObject(actionCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("! you are disconnected from server !");
+            System.exit(0);
         }
     }
 }

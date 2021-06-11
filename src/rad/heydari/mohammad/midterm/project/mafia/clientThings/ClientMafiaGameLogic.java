@@ -71,7 +71,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                 doTheCommand((Command) objectInputStream.readObject());
 
             } catch (IOException e) {
-                e.printStackTrace();
+                disConnection();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -313,9 +313,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                 }
 
             } catch (IOException e) {
-                System.out.println("connection lost");
-                e.printStackTrace();
-                playerExitsTheGame();
+                disConnection();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -324,13 +322,6 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     public void playerExitsTheGame(){
 
-//        try {
-//            objectOutputStream.writeObject(new Command(CommandTypes.iExitTheGame , null));
-//            System.exit(0);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         System.out.println("! you exited the game !");
         try {
             objectOutputStream.close();
@@ -338,7 +329,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             socket.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            disConnection();
         }finally {
             System.exit(0);
         }
@@ -433,7 +424,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         try {
             return (Command) objectInputStream.readObject();
         } catch (IOException e) {
-            e.printStackTrace();
+            disConnection();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -445,7 +436,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         try {
             objectOutputStream.writeObject(command);
         } catch (IOException e) {
-            e.printStackTrace();
+            disConnection();
         }
 
     }
@@ -465,4 +456,8 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         System.exit(0);
     }
 
+    private void disConnection(){
+        System.err.println("you are disconnected from server .");
+        playerExitsTheGame();
+    }
 }

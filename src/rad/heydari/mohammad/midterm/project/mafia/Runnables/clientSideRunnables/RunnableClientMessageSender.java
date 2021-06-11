@@ -17,11 +17,7 @@ import java.util.Locale;
 public class RunnableClientMessageSender implements Runnable{
     private String userName;
     private ObjectOutputStream objectOutputStream;
-//    private LoopedTillRightInput loopedTillRightInput;
-//    private BufferedReader bufferedReader;
 
-    private long startChatTimeStamp;
-    private long nowTimeStamp;
     private InputProducer inputProducer;
     private long startSecond;
     private long timeLimit;
@@ -29,14 +25,10 @@ public class RunnableClientMessageSender implements Runnable{
     public RunnableClientMessageSender(String userName, ObjectOutputStream objectOutputStream , InputProducer inputProducer) {
         this.userName = userName;
         this.objectOutputStream = objectOutputStream;
-//        this.loopedTillRightInput = new LoopedTillRightInput();
-//        this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-
-        this.startChatTimeStamp = java.time.Instant.now().getEpochSecond();
 
         this.inputProducer = inputProducer;
 
-        this.timeLimit = 3000;
+        this.timeLimit = 300;
     }
 
     @Override
@@ -62,13 +54,18 @@ public class RunnableClientMessageSender implements Runnable{
                }
            }
 
+           if(isTimeOver(timeLimit)){
+               break;
+           }
+
             if( input.equals("ready")) {
                 try {
                     objectOutputStream.writeObject(new Command(CommandTypes.imReady , null));
                     sentReady = true;
                     break;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.err.println("! you are disconnected from server !");
+                    System.exit(0);
                 }
             }
 
@@ -77,19 +74,20 @@ public class RunnableClientMessageSender implements Runnable{
                 try {
                     objectOutputStream.writeObject(new Command(CommandTypes.messageToOthers , new Message(userName , input)));
                 } catch (IOException e) {
-                    System.out.println("there is a problem with your connection");
-                    e.printStackTrace();
+                    System.err.println("! you are disconnected from server !");
+                    System.exit(0);
                 }
             }
 
-        }while (input != "ready" && (java.time.Instant.now().getEpochSecond() < startChatTimeStamp + 3000));
+        }while (! isTimeOver(timeLimit));
 
         if(!sentReady ){
 
             try {
                 objectOutputStream.writeObject(new Command(CommandTypes.imReady , null));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("! you are disconnected from server !");
+                System.exit(0);
             }
 
         }
