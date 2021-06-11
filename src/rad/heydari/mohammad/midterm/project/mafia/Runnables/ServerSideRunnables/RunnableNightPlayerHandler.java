@@ -22,13 +22,23 @@ public class RunnableNightPlayerHandler implements Runnable{
     public void run() {
         Command command = null;
         Demand demand = null;
-//        while (true){
+        while (true){
             try {
                 command = player.receivePlayerRespond();
-                God.doTheCommand(command);
+                if(command == null){
+                    break;
+                }
+                else if(command.getType() == CommandTypes.iVote){
+                    God.doTheCommand(command);
+                    break;
+                }
+                else {
+                    God.doTheCommand(command);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                God.removeOfflinePlayerNotifyOthers(player);
+                break;
             }
-//        }
+        }
     }
 }

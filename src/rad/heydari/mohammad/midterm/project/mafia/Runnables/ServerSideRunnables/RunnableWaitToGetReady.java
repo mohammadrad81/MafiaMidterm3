@@ -6,6 +6,7 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.God;
 import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerDetails;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 public class RunnableWaitToGetReady implements Runnable{
 
@@ -39,7 +40,8 @@ public class RunnableWaitToGetReady implements Runnable{
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                God.removeOfflinePlayerNotifyOthers(player);
+                break;
             }
         }
     }

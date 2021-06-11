@@ -23,17 +23,17 @@ public class RunnableVoteHandler implements Runnable{
             Command command = null;
             try {
                 command = voter.receivePlayerRespond();
+                if(command.getType() == CommandTypes.iVote){
+                    hasVoted = true;
+                    God.doTheCommand(command);
+                }
+
+                else{
+                    God.doTheCommand(command);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if(command.getType() == CommandTypes.iVote){
-                hasVoted = true;
-                God.doTheCommand(command);
-            }
-
-            else{
-                God.doTheCommand(command);
+                God.removeOfflinePlayerNotifyOthers(voter);
+                break;
             }
         }
     }

@@ -102,7 +102,7 @@ public class God {
     }
 
     public static void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
-
+        serverSideGame.removeOfflinePlayerNotifyOthers(removingPlayer);
     }
 
 }

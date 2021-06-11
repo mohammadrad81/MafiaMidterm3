@@ -14,6 +14,7 @@ import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -316,7 +317,17 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         else if(command.getType() == CommandTypes.iDoMyAction){
             PlayerAction playerAction =(PlayerAction) command.getCommandNeededThings();
             if(playerAction.getPlayerActionType() == PlayersActionTypes.mafiaVictim){
-                if(playerAction.getNameOfThePlayerActionHappensTo() != null){
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("mafia member " +
+                            playerAction.getActionDoerName() +
+                            " thinks mafia better dont kill anyone tonight .");
+                }
+                else if(playerAction.getNameOfThePlayerActionHappensTo() != null){
+
+                    System.out.println("mafia member " + playerAction.getActionDoerName() +
+                            " says we better kill " +
+                            playerAction.getNameOfThePlayerActionHappensTo());
+
                     notifyAliveBadGuysAMafiaMemberChoice(playerAction);
                     synchronized (nightEvents){
                         nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
@@ -326,12 +337,30 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.godFatherVictim){
                 notifyAliveBadGuysTheGodfatherChoice(playerAction.getNameOfThePlayerActionHappensTo());
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("godfather says we kill nobody tonight .");
+                }
+
+                else{
+                    System.out.println("godfather says we kill " +
+                            playerAction.getNameOfThePlayerActionHappensTo() +
+                            " tonight .");
+                }
+
                 synchronized (nightEvents){
                     nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                             true);
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.townDoctorSave){
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("town doctor saves nobody tonight .");
+                }
+                else {
+                    System.out.println("town doctor saves player : " +
+                            playerAction.getNameOfThePlayerActionHappensTo() +
+                            " tonight .");
+                }
                 if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
                         nightEvents.townDoctorSave(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
@@ -339,25 +368,39 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.doctorLectorSave){
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("doctor lector saves player : " +
+                            playerAction.getNameOfThePlayerActionHappensTo() +
+                            " tonight .");
+                }
+                else {
+                    System.out.println("doctor lector saves player : " +
+                            playerAction.getNameOfThePlayerActionHappensTo() +
+                            " tonight .");
+                }
                 notifyAliveBadGuysTheDoctorLectorChoice(playerAction.getNameOfThePlayerActionHappensTo());
                 nightEvents.lectorSave(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.toughGuySaysShowDeadRoles){
+                System.out.println("tough guy says the dead roles should be revealed .");
                 synchronized (nightEvents){
                     nightEvents.toughGuySaysShowDeadRoles();
                 }
             }
-            else if(playerAction.getPlayerActionType() == PlayersActionTypes.detect){
+            else if(playerAction.getPlayerActionType() == PlayersActionTypes.detect) {
+                System.out.println("the detective wants to detect player " + playerAction.getNameOfThePlayerActionHappensTo());
                 synchronized (nightEvents){
                     nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.mute){
+                System.out.println("therapist mutes player : " +playerAction.getNameOfThePlayerActionHappensTo());
                 synchronized (nightEvents){
                     nightEvents.mute(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.professionalShoots){
+                System.out.println("the professional shoots player : " + playerAction.getNameOfThePlayerActionHappensTo());
                 synchronized (nightEvents){
                     nightEvents.professionalShoots(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                 }
@@ -580,13 +623,16 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     public void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
         System.err.println("! player " + removingPlayer.getUserName() + " is disconnected !") ;
-        notifyOthersThePlayerGotOffline(removingPlayer);
-
 
         if(alivePlayers.contains(removingPlayer)){
             offlineDeadOnes.add(removingPlayer);
             alivePlayers.remove(removingPlayer);
         }
+
+        notifyOthersThePlayerGotOffline(removingPlayer);
+
+
+
     }
 
     private void notifyOthersThePlayerGotOffline(ServerSidePlayerDetails offlinePlayer){

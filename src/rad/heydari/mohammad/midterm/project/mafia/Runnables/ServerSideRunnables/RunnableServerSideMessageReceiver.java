@@ -24,18 +24,22 @@ public class RunnableServerSideMessageReceiver implements Runnable{
 
             try {
                 command = player.receivePlayerRespond();
+                if(command.getType() == CommandTypes.imReady){
+                    God.doTheCommand(new Command(CommandTypes.messageToOthers , new Message(player.getUserName() , "i am ready")));
+                    isReady = true;
+                }
+
+                else if(command.getType() == CommandTypes.messageToOthers){
+                    God.doTheCommand(command);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                God.removeOfflinePlayerNotifyOthers(player);
+                break;
             }
 
-            if(command.getType() == CommandTypes.imReady){
-                God.doTheCommand(new Command(CommandTypes.messageToOthers , new Message(player.getUserName() , "i am ready")));
-                isReady = true;
-            }
 
-            else if(command.getType() == CommandTypes.messageToOthers){
-                God.doTheCommand(command);
-            }
+
         }
 
     }

@@ -4,6 +4,7 @@ package rad.heydari.mohammad.midterm.project.mafia.Runnables.ServerSideRunnables
 import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.RepetitiousUserNameException;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.CommandTypes;
+import rad.heydari.mohammad.midterm.project.mafia.serverThings.God;
 import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerMafiaGameLogic;
 import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerDetails;
 
@@ -54,13 +55,14 @@ public class RunnableUserNameTaker implements Runnable{
                 }
 
             }catch (SocketException e){
-                e.printStackTrace();
+                God.removeOfflinePlayerNotifyOthers(thisPlayerDetails);
                 break;
             }catch (IOException e) {
-                e.printStackTrace();
+                God.removeOfflinePlayerNotifyOthers(thisPlayerDetails);
                 break;
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                System.out.println("wrong sent from player : " + thisPlayerDetails.getUserName());
+                God.removeOfflinePlayerNotifyOthers(thisPlayerDetails);
                 break;
             } catch (RepetitiousUserNameException e) {
 
@@ -70,7 +72,7 @@ public class RunnableUserNameTaker implements Runnable{
                             "this username is already taken"));
 
                 } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                    God.removeOfflinePlayerNotifyOthers(thisPlayerDetails);
                     break;
                 }
             }

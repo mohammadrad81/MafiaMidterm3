@@ -293,7 +293,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                     Thread.sleep(200);
                 }
 
-                testingUserName = inputProducer.consumeInput();
+                testingUserName = inputProducer.consumeInput().trim();
 
                 if(testingUserName.equals("exit")){
                     playerExitsTheGame();

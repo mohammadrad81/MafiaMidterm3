@@ -90,9 +90,6 @@ public class ServerSidePlayerDetails implements Serializable {
         Command respond = null;
         try {
             respond = (Command) objectInputStream.readObject();
-
-
-
         }  catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
