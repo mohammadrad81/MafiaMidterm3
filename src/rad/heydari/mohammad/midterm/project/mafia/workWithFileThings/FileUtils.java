@@ -39,10 +39,16 @@ public class FileUtils {
         synchronized (file){
             try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file))){
                 Message message = null;
-                while (objectInputStream.available() > 0){
-                    message = (Message) objectInputStream.readObject();
-                    System.out.println(message.getSenderName() + " : ");
-                    System.out.println(message.getMessageText());
+                while (true){
+                    try {
+                        message = (Message) objectInputStream.readObject();
+                        System.out.println("// HISTORY MESSAGE :: " +
+                                message.getSenderName() +
+                                " : " +
+                                message.getMessageText());
+                    }catch (EOFException e){
+                        break;
+                    }
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
