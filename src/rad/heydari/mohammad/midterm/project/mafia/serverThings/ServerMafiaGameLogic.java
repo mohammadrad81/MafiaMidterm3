@@ -54,7 +54,6 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         givePlayersTheirRoles();
 
-
         while (! isGameOver()){ // it should be !isGameOver()
 
             if(! playersHaveBeenIntroduced){
@@ -685,6 +684,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         revealTheDetectedPlayerForDetective();
 
         killThoseWhoDiedTonight();
+
+        if(nightEvents.mustProfessionalDieForWrongShoot()){
+            killProfessionalForWrongShoot();
+        }
 
         if(nightEvents.isShowDeadRoles()) {
             revealDeadRoles();
@@ -1428,5 +1431,19 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void killProfessionalForWrongShoot(){
+        Command dieCommand = new Command(CommandTypes.youAreDead ,
+                "! you did wrong shoot last night !");
+        ServerSidePlayerDetails professional = findSpecificAliveRolePlayer(RoleNames.professional);
+        if(professional != null){
+            try {
+                professional.sendCommandToPlayer(dieCommand);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }
