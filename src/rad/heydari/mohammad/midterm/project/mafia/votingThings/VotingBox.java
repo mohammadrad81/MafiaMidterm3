@@ -21,10 +21,6 @@ public class VotingBox {
 
     public synchronized void saveVoting(ServerSidePlayerDetails suspect){
 
-        if(suspect == null){
-            return;
-        }
-
         Set<ServerSidePlayerDetails> keySet = playerCountOfVotesHashMap.keySet();
         if(keySet.contains(suspect)){
             playerCountOfVotesHashMap.put(suspect , playerCountOfVotesHashMap.get(suspect) + 1);
