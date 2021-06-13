@@ -850,6 +850,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * the night of the game ( mafia kills , doctors save and ...)
      */
     private void night(){
+        if(nightEvents.getMutedOne() != null){
+            nightEvents.getMutedOne().setMuted(false);
+        }
+
         nightEvents.resetNightEvents();
 
         informAllPlayersItsNightDoYourAction();
@@ -884,7 +888,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         ServerSidePlayerDetails player = null;
         while (playerDetailsIterator.hasNext()){
             player = playerDetailsIterator.next();
-            executorService.execute(new RunnableServerSideMessageReceiver(player));
+            if(! player.isMuted()){
+                executorService.execute(new RunnableServerSideMessageReceiver(player));
+            }
         }
         executorService.shutdown();
 
@@ -1755,6 +1761,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * @param mutedPlayer the player who gets muted for tomorrow
      */
     private void muteTheMutedOne(ServerSidePlayerDetails mutedPlayer){
+        mutedPlayer.setMuted(true);
         Command muteCommand = new Command(CommandTypes.youAreMutedForTomorrow , null);
         try {
             mutedPlayer.sendCommandToPlayer(muteCommand);

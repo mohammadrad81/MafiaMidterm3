@@ -19,7 +19,7 @@ public class ServerSidePlayerDetails implements Serializable {
     private Socket socket;
     private String userName;
     private RoleNames roleName;
-//    private boolean isMuted;
+    private boolean isMuted;
 //    private boolean isAlive;
 //    private boolean isSpectator;
 
@@ -68,13 +68,13 @@ public class ServerSidePlayerDetails implements Serializable {
         this.roleName = roleName;
     }
 
-//    public boolean isMuted() {
-//        return isMuted;
-//    }
-//
-//    public void setMuted(boolean muted) {
-//        isMuted = muted;
-//    }
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(boolean muted) {
+        isMuted = muted;
+    }
 //
 //    public boolean isAlive() {
 //        return isAlive;
