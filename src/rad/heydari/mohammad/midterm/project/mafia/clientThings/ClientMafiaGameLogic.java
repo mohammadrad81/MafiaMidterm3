@@ -110,6 +110,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 //        }
 
         if (command.getType() == CommandTypes.determineYourUserName){
+            synchronized (inputProducer){
+                inputProducer.clearInputs();
+            }
             determineUserName();
             loopedTillRightInput.createFileUtils(userName);
         }
@@ -141,7 +144,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             printServerToClientString(command);
         }
         else if(command.getType() == CommandTypes.waitingForClientToGetReady){
-            inputProducer.clearInputs();
+            synchronized (inputProducer){
+                inputProducer.clearInputs();
+            }
             getReady();
         }
         else if(command.getType() == CommandTypes.youAreDead){
@@ -331,16 +336,20 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                 "( exit is not valid , if you enter that , you leave the game ) :" );
         while (true){
             try {
+                inputProducer.clearInputs();
 
-                while (!inputProducer.hasNext()){
-                    Thread.sleep(200);
+                while (true){
+                    if(inputProducer.hasNext()){
+                        testingUserName = inputProducer.consumeInput().trim();
+                        break;
+                    }
+                    else {
+                        Thread.sleep(150);
+                    }
                 }
-
-                testingUserName = inputProducer.consumeInput().trim();
 
                 if(testingUserName.equals("exit")){
                     playerExitsTheGame();
-
                 }
 
                 objectOutputStream.writeObject(new Command(CommandTypes.setMyUserName , testingUserName ));
@@ -353,6 +362,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
                 else if(serverRespond.getType() == CommandTypes.repetitiousUserName){
                     System.out.println("oops ... \n some one else already has chosen that username , try again : ");
+                }
+
+                else {
+                    doTheCommand(serverRespond);
                 }
 
             } catch (IOException e) {
