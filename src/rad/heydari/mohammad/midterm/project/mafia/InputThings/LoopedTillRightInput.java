@@ -83,7 +83,7 @@ public class LoopedTillRightInput {
         while (! doneCorrectly){
             input = intInput();
             if(input > maximum || input < minimum){
-                System.out.println("the input is not in range (minimum : " + minimum + " & maximum : " +maximum);
+                System.out.println("the input is not in range (minimum : " + minimum + " & maximum : " +maximum + " ) " );
             }
             else{
                 doneCorrectly = true;
