@@ -1,5 +1,6 @@
 package rad.heydari.mohammad.midterm.project.mafia.workWithFileThings;
 
+import rad.heydari.mohammad.midterm.project.mafia.MafiaGameException.NoUserFileUtilException;
 import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
 
 import java.io.*;
@@ -61,7 +62,7 @@ public class FileUtils {
                     System.out.println(scanner.nextLine());
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                throw new NoUserFileUtilException("! there is no file yet!");
             }
         }
     }
