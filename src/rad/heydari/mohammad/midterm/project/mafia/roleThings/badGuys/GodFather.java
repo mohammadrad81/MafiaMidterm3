@@ -13,14 +13,28 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+/**
+ * a class for godfather role
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class GodFather extends Actionable implements GoodGuys {
-//    private Scanner scanner ;
+    /**
+     * constructor for the role
+     * @param objectInputStream the InputStream to communicate with server
+     * @param objectOutputStream the OutputStream to communicate with server
+     * @param userName is the username of the player
+     * @param inputProducer is the inputProducer of the player
+     */
     public GodFather(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream , String userName , InputProducer inputProducer) {
         super(objectInputStream, objectOutputStream , "godfather" , userName , inputProducer);
-//        scanner = new Scanner(System.in);
+
     }
 
+    /**
+     * the action of the role
+     * @param command
+     */
     @Override
     public void action(Command command) {
         startNow();

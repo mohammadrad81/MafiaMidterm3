@@ -13,7 +13,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Locale;
-
+/**
+ * a class for the player to send his messages during the chat
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class RunnableClientMessageSender implements Runnable{
     private String userName;
     private ObjectOutputStream objectOutputStream;
@@ -22,6 +26,13 @@ public class RunnableClientMessageSender implements Runnable{
     private long startSecond;
     private long timeLimit;
 
+    /**
+     * simple constructor
+     * @param userName is the userName of the message sender
+     * @param objectOutputStream is the outputStream to communicate with server ( sending messages by it )
+     * @param inputProducer is the input producer for players inputs
+     * @see InputProducer
+     */
     public RunnableClientMessageSender(String userName, ObjectOutputStream objectOutputStream , InputProducer inputProducer) {
         this.userName = userName;
         this.objectOutputStream = objectOutputStream;

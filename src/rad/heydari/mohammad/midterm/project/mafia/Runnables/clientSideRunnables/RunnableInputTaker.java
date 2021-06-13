@@ -1,10 +1,12 @@
 package rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables;
 
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.InputProducer;
-import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
-
-import java.util.Scanner;
-
+/**
+ * a runnable that constantly takes inputs from the client
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ * @see InputProducer
+ */
 public class RunnableInputTaker implements Runnable{
 
     private InputProducer inputProducer;

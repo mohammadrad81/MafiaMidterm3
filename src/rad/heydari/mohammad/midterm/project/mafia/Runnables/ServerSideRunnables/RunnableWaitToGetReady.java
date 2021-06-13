@@ -8,14 +8,26 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerD
 import java.io.IOException;
 import java.net.SocketException;
 
+/**
+ * runnable class to wait for the player to get ready to play
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class RunnableWaitToGetReady implements Runnable{
 
     private ServerSidePlayerDetails player;
 
+    /**
+     * simple constructor
+     * @param player is the player , the server is waiting to get ready
+     */
     public RunnableWaitToGetReady(ServerSidePlayerDetails player){
         this.player = player;
     }
 
+    /**
+     * run method for waiting for player to get ready
+     */
     @Override
     public void run(){
 

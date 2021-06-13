@@ -12,17 +12,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
+
+/**
+ * class for the role , Doctor lector
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 
 public class DoctorLector extends Actionable implements BadGuys {
     private boolean hasSavedHimSelf ;
-//    private Scanner scanner;
 
     public DoctorLector(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream , String userName , InputProducer inputProducer) {
         super(objectInputStream, objectOutputStream , "doctor lector", userName , inputProducer);
-//        scanner = new Scanner(System.in);
     }
 
+    /**
+     * the action of the role
+     * @param command is the command that contains the needed things for the role
+     */
     @Override
     public void action(Command command) {
         startNow();
@@ -74,6 +81,10 @@ public class DoctorLector extends Actionable implements BadGuys {
 
             }
             else if(input > 0 && input <= badGuysNames.size()){
+                if(badGuysNames.get(input-1).equals(getUserName())){
+                    hasSavedHimSelf = true;
+                }
+
                 System.out.println("ok , you have chosen to save " + badGuysNames.get(input - 1));
                 actionCommand = new Command(CommandTypes.iDoMyAction ,
                         new PlayerAction(PlayersActionTypes.doctorLectorSave,

@@ -5,11 +5,20 @@ import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
+/**
+ * a class for working with file and saving messages
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class FileUtils {
 
     private String fileName;
     private File file;
+
+    /**
+     * simple constructor
+     * @param userName is the name of the player , the fileUtil saves messages for
+     */
     public FileUtils(String userName){
         fileName = userName + "Messages.txt";
         file = new File(fileName);
@@ -25,6 +34,10 @@ public class FileUtils {
         }
     }
 
+    /**
+     * saves a message for player
+     * @param message is the message the player received
+     */
     public void saveMessage(Message message){
         synchronized (file){
             try (FileWriter fileWriter = new FileWriter(file , true)){
@@ -37,6 +50,9 @@ public class FileUtils {
         }
     }
 
+    /**
+     * prints all messages for the player
+     */
     public void printAllMessages(){
 
         synchronized (file){

@@ -6,7 +6,12 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.God;
 import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerDetails;
 
 import java.io.IOException;
-
+/**
+ * runnable class for handling the vote from the player
+ * server side
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class RunnableVoteHandler implements Runnable{
 
     private ServerSidePlayerDetails voter;

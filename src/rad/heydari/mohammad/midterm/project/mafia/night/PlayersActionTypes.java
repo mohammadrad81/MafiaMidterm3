@@ -1,7 +1,11 @@
 package rad.heydari.mohammad.midterm.project.mafia.night;
 
 import java.io.Serializable;
-
+/**
+ * an enum for the types of the actions of the player
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public enum PlayersActionTypes implements Serializable {
 
     godFatherVictim,

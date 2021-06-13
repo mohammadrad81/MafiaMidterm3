@@ -10,15 +10,29 @@ import java.util.Scanner;
  * makes the client to enter the valid input
  * if enters something else
  * repeats
+ *
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ *
  */
 public class LoopedTillRightInput {
 
     private Scanner scanner;
     private FileUtils fileUtils;
 
+    /**
+     * constructor for the class
+     * init the scanner
+     */
     public LoopedTillRightInput(){
-        scanner = new Scanner(new UnClosableStream(System.in));
+        scanner = new Scanner(System.in);
     }
+
+    /**
+     * scans a string from system input
+     * @return the input string , but if it is "exit" or "HISTORY" ,
+     * recursively does the command and takes the input again
+     */
     public String stringInput(){
         String input = null;
         input = scanner.nextLine();
@@ -38,6 +52,10 @@ public class LoopedTillRightInput {
         return input;
     }
 
+    /**
+     * only an integer is valid
+     * @return the input integer
+     */
     public int intInput(){
         boolean doneCorrectly = false;
         int input = 0;
@@ -53,6 +71,12 @@ public class LoopedTillRightInput {
         return input;
     }
 
+    /**
+     * only an integer in a range is valid
+     * @param minimum is the minimum valid amount
+     * @param maximum is the maximum valid amount
+     * @return the input number
+     */
     public int rangedIntInput(int minimum , int maximum){
         boolean doneCorrectly = false;
         int input = 0;
@@ -68,10 +92,20 @@ public class LoopedTillRightInput {
         return input;
     }
 
+    /**
+     * creates a file for storing the messages
+     * @param userName the username of the user
+     */
     public void createFileUtils(String userName){
         this.fileUtils = new FileUtils(userName);
     }
 
+    /**
+     * saves the message to the file
+     * @param message is the message going to save
+     * @throws NoUserFileUtilException
+     * @see FileUtils
+     */
     public void saveMessage(Message message) throws NoUserFileUtilException {
         if(fileUtils == null){
             throw new NoUserFileUtilException("this input taker has no file util (no username is set for it).");
@@ -84,6 +118,9 @@ public class LoopedTillRightInput {
 
     }
 
+    /**
+     * prints all the messages from the file
+     */
     public void printAllMessages(){
         if (fileUtils == null){
                 throw new NoUserFileUtilException("this input taker has no file util (no username is set for it).");

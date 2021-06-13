@@ -1,7 +1,10 @@
 package rad.heydari.mohammad.midterm.project.mafia.commandThings;
 
 import java.io.Serializable;
-
+/** an enum for the type of the commands
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public enum CommandTypes implements Serializable {
 
     //server to client command types:
@@ -10,7 +13,6 @@ public enum CommandTypes implements Serializable {
     repetitiousUserName,
     yourUserNameIsSet,
     takeYourRole,
-//    chatWithOthers,
     vote,
     votingResult,
     doYourAction,
@@ -18,17 +20,12 @@ public enum CommandTypes implements Serializable {
     newMessage,
     chatRoomStarted,
     chatRoomIsClosed,
-//    mafiaIntroduction,
-//    doctorToMayorIntroduction,
-//    mayorToDoctorIntroduction,
-//    serverToClientMessage,
     serverToClientString,
     waitingForClientToGetReady,
     youAreDead,
     endOfTheGame,
     youAreMutedForTomorrow,
     // client to server command type :
-
     setMyUserName,
     iExitTheGame,
     messageToOthers,
@@ -37,9 +34,4 @@ public enum CommandTypes implements Serializable {
     iDoMyAction,
     mayorSaysLynch,
     mayorSaysDontLynch,
-
-
-
-
-
 }

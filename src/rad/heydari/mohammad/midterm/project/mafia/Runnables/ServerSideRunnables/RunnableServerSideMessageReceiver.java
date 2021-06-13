@@ -7,13 +7,26 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.God;
 import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerDetails;
 
 import java.io.IOException;
-
+/**
+ * runnable class for receiving messages from player
+ * server side
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class RunnableServerSideMessageReceiver implements Runnable{
     private ServerSidePlayerDetails player;
 
+    /**
+     * simple constructor
+     * @param player is the player , the server receives messages from
+     */
     public RunnableServerSideMessageReceiver(ServerSidePlayerDetails player){
         this.player = player;
     }
+
+    /**
+     * the run method for receiving messages from the client
+     */
     @Override
     public void run() {
 

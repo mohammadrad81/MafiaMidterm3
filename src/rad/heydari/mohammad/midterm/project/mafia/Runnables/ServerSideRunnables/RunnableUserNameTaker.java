@@ -13,16 +13,29 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 
-
+/**
+ * runnable class for setting the userName of the player
+ * server side
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class RunnableUserNameTaker implements Runnable{
     private ServerSidePlayerDetails thisPlayerDetails;
     private ServerMafiaGameLogic serverMafiaGameLogic;
 
+    /**
+     * simple constructor
+     * @param serverMafiaGameLogic is the game logic , the username taker is working for
+     * @param thisPlayerDetails is the player , the username taker is about to set his username
+     */
     public RunnableUserNameTaker(ServerMafiaGameLogic serverMafiaGameLogic, ServerSidePlayerDetails thisPlayerDetails){
         this.serverMafiaGameLogic = serverMafiaGameLogic;
         this.thisPlayerDetails = thisPlayerDetails;
     }
 
+    /**
+     * run method for taking username from the player and setting it
+     */
     @Override
     public void run() {
 

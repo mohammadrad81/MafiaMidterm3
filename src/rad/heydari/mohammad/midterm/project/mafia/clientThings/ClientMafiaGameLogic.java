@@ -29,7 +29,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * class for the game logic of the mafia game
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ * @see Command
+ * @see CommandTypes
+ * @see InputProducer
+ * @see LoopedTillRightInput
+ * @see rad.heydari.mohammad.midterm.project.mafia.night.PlayerAction
+ * @see  rad.heydari.mohammad.midterm.project.mafia.night.PlayersActionTypes
+ * @see Role
+ * @see RoleNames
+ */
 public class ClientMafiaGameLogic implements ClientSideGame {
     private  String userName;
 
@@ -48,8 +60,12 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 //    private Scanner scanner;
 
 
-
-
+    /**
+     * constructor for the game
+     * @param socket is the connection socket to the server
+     * @param objectInputStream is the objectInputStream made by the socket inputStream
+     * @param objectOutputStream is the objectOutputStream made by the socket outputStream
+     */
     public ClientMafiaGameLogic(Socket socket, ObjectInputStream objectInputStream , ObjectOutputStream objectOutputStream){
         this.isAlive = true;
         this.isMuted = false;
@@ -62,6 +78,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         this.runnableInputTaker = new RunnableInputTaker(inputProducer);
     }
 
+    /**
+     * start of the game
+     */
     public void play(){
         ExecutorService executorService = Executors.newCachedThreadPool();
         executorService.execute(runnableInputTaker);
@@ -78,6 +97,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
     }
 
+    /**
+     * takes a command and do it
+     * @param command is the command from server
+     */
     @Override
     public void doTheCommand(Command command){
 
@@ -132,6 +155,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
     }
 
+    /**
+     * player chats
+     */
     public void chat(){
 
         ExecutorService executorService = null;
@@ -198,6 +224,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     }
 
+    /**
+     * player votes
+     * @param command is the command contains the name of other players
+     */
     public void vote(Command command){
         System.out.println("! VOTING TIME !");
         ExecutorService executorService = null;
@@ -250,6 +280,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     }
 
+    /**
+     * player does his action
+     * @param command is the command contains the needed things for the player action
+     */
     public void doYourAction(Command command){
         ExecutorService executorService = Executors.newCachedThreadPool();
         if(isAlive){
@@ -269,6 +303,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         // else nothing , the server had handled it before
     }
 
+    /**
+     * player takes his RoleName and creates his role by the roleFactory
+     * @param command is the command contains the roleName from server
+     */
     public void takeYourRole(Command command){
         this.role =  generateRole((RoleNames) command.getCommandNeededThings() ,
                 objectOutputStream ,
@@ -276,10 +314,16 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         printTheClientsRole();
     }
 
+    /**
+     * prints the role of the player
+     */
     public void printTheClientsRole(){
-        System.out.println("your role is : " + role.getRoleNameString());
+        System.out.println("your role is : " + role.getRoleString());
     }
 
+    /**
+     * player write his username and if it is not repetitious , it will be set , else , player enters another
+     */
     public void determineUserName(){
         String testingUserName = null;
         Command serverRespond = null;
@@ -319,6 +363,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
     }
 
+    /**
+     * player exits the game , by closing the client program
+     */
     public void playerExitsTheGame(){
 
         System.out.println("! you exited the game !");
@@ -334,6 +381,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
     }
 
+    /**
+     * the entered username of the player is set ( it was not repetitious )
+     * @param command is the command from server contains the username
+     */
     public void confirmPlayerUsername(Command command){
         this.userName = (String) command.getCommandNeededThings();
         System.out.println("your username : " + this.userName);
@@ -343,6 +394,13 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 //        System.out.println(command.getCommandNeededThings());
 //    }
 
+    /**
+     * a role factory that makes a role by input roleName and streams
+     * @param roleName is the roleName from server
+     * @param objectOutputStream is the outputStream to the server
+     * @param objectInputStream is the inputStream from the server
+     * @return a role by the inputs
+     */
     public Role generateRole(RoleNames roleName , ObjectOutputStream objectOutputStream , ObjectInputStream objectInputStream){
         if(roleName == RoleNames.godFather){
             return new GodFather(objectInputStream , objectOutputStream , userName , inputProducer);
@@ -379,10 +437,17 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
     }
 
+    /**
+     * prints the string in a command from server
+     * @param command is the command contains the string
+     */
     public void printServerToClientString(Command command){
         System.out.println(command.getCommandNeededThings());
     }
 
+    /**
+     * player informs the server that he is ready for the game
+     */
     private void getReady(){
 
         System.out.println("Enter ready to inform the god that you are ready : ");
@@ -418,6 +483,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
     }
 
+    /**
+     * player receives command from server
+     * @return the received command from server
+     */
     private Command receiveServerCommand(){
 
         try {
@@ -430,6 +499,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         return null;
     }
 
+    /**
+     * sends a command to the server
+     * @param command is the sending command
+     */
     private void sendCommandToServer(Command command){
 
         try {
@@ -440,21 +513,36 @@ public class ClientMafiaGameLogic implements ClientSideGame {
 
     }
 
+    /**
+     * prints the input message
+     * @param message is the input message
+     */
     private void printMessage(Message message){
         System.out.println(message.getSenderName() + ": "+ message.getMessageText());
     }
 
+    /**
+     * player dies ( the program still runs ) and the reason of death will be printed
+     * @param command is the death command from server
+     */
     private void die(Command command){
         isAlive = false;
         System.out.println("you are dead");
         System.out.println("reason : " + command.getCommandNeededThings());
     }
 
+    /**
+     * prints the result of the game and end of the program
+     * @param command is the end of the game command
+     */
     private void endOfTheGame(Command command){
         System.out.println(command.getCommandNeededThings());
         System.exit(0);
     }
 
+    /**
+     * player is disconnected from server and the program ends
+     */
     private void disConnection(){
         System.err.println("you are disconnected from server .");
         playerExitsTheGame();

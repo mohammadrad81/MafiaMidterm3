@@ -14,7 +14,6 @@ import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -22,6 +21,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * the class for mafia game logic
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class ServerMafiaGameLogic implements ServerSideGame {
     private ArrayList<ServerSidePlayerDetails> alivePlayers;
     private ArrayList<ServerSidePlayerDetails> spectators;
@@ -37,16 +41,23 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         this.votingBox = new VotingBox();
         this.nightEvents = new NightEvents();
     }
+
+    /**
+     * starts the mafia game
+     */
     @Override
     public void startTheGame(){
 
-        gameStarting();
+        gameBegins();
 
         gameEnding();
 
     }
 
-    private void gameStarting(){
+    /**
+     * the beginning of the game
+     */
+    private void gameBegins(){
         boolean playersHaveBeenIntroduced = false;
 
         initUserNames();
@@ -87,6 +98,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * the end of the game
+     */
     private void gameEnding(){
         ArrayList<ServerSidePlayerDetails> winnersArrayList = null;
         ArrayList<ServerSidePlayerDetails> losersArrayList = null;
@@ -118,14 +132,17 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             endOfTheGame += player.getUserName() + " was : " + RoleNames.getRoleAsString(player.getRoleName()) + "\n";
         }
 
-        sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.endOfTheGame , endOfTheGame));
+        sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.endOfTheGame , endOfTheGame));
 
     }
 
+    /**
+     * initials the players' usernames
+     */
     private void initUserNames(){
         Command determineYourUserName = new Command(CommandTypes.determineYourUserName , null);
 
-        sendCommandToOnlinePlayers(determineYourUserName);
+        sendCommandToAlivePlayers(determineYourUserName);
 
         ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -146,6 +163,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * gives the players their roles
+     */
     private void givePlayersTheirRoles(){
 
         shuffleThePlayers();
@@ -284,6 +304,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * shuffles the players in their list ( to give them their roles randomly )
+     */
     private void shuffleThePlayers(){
 
         ArrayList<ServerSidePlayerDetails> shuffledPlayers = new ArrayList<>();
@@ -298,10 +321,18 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * gets a command and do what it says
+     * @param command is the receiving command
+     */
     public void doTheCommand(Command command){
         syncDoTheCommand(command);
     }
 
+    /**
+     * gets a command and do what it says synchronized
+     * @param command is the receiving command
+     */
     private synchronized void syncDoTheCommand(Command command){// implementLater
 
         if(command.getType() == CommandTypes.messageToOthers){
@@ -409,6 +440,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         // other things :
     }
 
+    /**
+     * a person who votes , this method notifies the other players this vote
+     * @param vote is the vote , the other players are going to know about
+     */
     private void notifyOthersThisVote(Vote vote){
         String  voteDescription = null;
         if(vote.getSuspectName() == null){
@@ -419,10 +454,16 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
         Command someOneVoted = new Command(CommandTypes.serverToClientString , voteDescription);
-        sendCommandToOnlineAndSpectatorPlayers(someOneVoted);
+        sendCommandToAliveAndSpectatorPlayers(someOneVoted);
 
     }
 
+    /**
+     * sets a userName for a player , if the username is repetitious , throws exception
+     * @param playerDetails is the ServerSidePlayerDetails of the player , we gonna set his/her username
+     * @param userName is the username , the player entered
+     * @throws RepetitiousUserNameException the exception thrown the moment , the username is repetitious
+     */
     public synchronized void setUserName(ServerSidePlayerDetails playerDetails , String userName) throws RepetitiousUserNameException {
         if(isUserNameRepetitious(userName)){
             throw new RepetitiousUserNameException("this userName is already taken");
@@ -432,6 +473,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * checks if the username is repetitious or not
+     * @param userName is the username is checked to be repetitious or not
+     * @return true if another player has chosen this username , else false
+     */
     private  boolean isUserNameRepetitious(String userName){
         Iterator<ServerSidePlayerDetails> serverSidePlayerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails serverSidePlayerDetails = null;
@@ -446,17 +492,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         return false;
     }
-//    private void deleteThePlayersWithoutUserNames(){
-//        Iterator<ServerSidePlayerDetails> iterator = playerDetailsArrayList.iterator();
-//        while (iterator.hasNext()){
-//            if(iterator.hasNext()){
-//                ServerSidePlayerDetails serverSidePlayerDetails = iterator.next();
-//                if(serverSidePlayerDetails.getUserName() == null){
-//                    iterator.remove();
-//                }
-//            }
-//        }
-//    }
+
+    /**
+     * the introduction night of the game
+     */
     private void introductionNight(){
 
         mafiaIntroduction();
@@ -465,6 +504,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * mafia members will know each other
+     */
     private void mafiaIntroduction(){
 
         String mafiaIntroduction = getMafiaIntroduction();
@@ -491,7 +533,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
 
     }
-
+    /**
+     * the doctor will be introduced to the mayor
+     */
     private void townDoctorAndMayorIntroduction(){
 
         ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
@@ -506,6 +550,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     *
+     * @return the string that contains the mafia members and their roles
+     */
     private String  getMafiaIntroduction(){
         String mafiaIntroduction = "the list of mafias : \nthe godfather : " ;
 
@@ -524,7 +572,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         else{
             mafiaIntroduction += "no one\n";
         }
-        mafiaIntroduction += "mafia : ";
+        mafiaIntroduction += "mafia : \n";
 
         if(findSameRolesPlayers(RoleNames.mafia).size() == 0){
             mafiaIntroduction += "no one";
@@ -540,6 +588,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return mafiaIntroduction;
     }
 
+    /**
+     * finds a player with a specific RoleName (there is at most one player alive with that role )
+     * @param roleName is the roleName of the player we want to find
+     * @return the alive player with that roleName , if there is none , null
+     */
     private ServerSidePlayerDetails findSpecificAliveRolePlayer(RoleNames roleName){
         Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
 
@@ -553,6 +606,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return null;
     }
 
+    /**
+     * finds a player if by roleName , no matter he/she is alive or not
+     * @param roleName is the roleName we want to find the player that has that role
+     * @return the player with that role , if there is none , null
+     */
     private ServerSidePlayerDetails findSpecificRolePlayerNoMatterOnOrOff(RoleNames roleName){
         if(findSpecificAliveRolePlayer(roleName) != null){
             return findSpecificAliveRolePlayer(roleName);
@@ -580,6 +638,12 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * finds the players that have the input roleName
+     * @param roleName is the input roleName
+     * @return an arrayList contains the ServerSidePlayerDetails of the players that have the input roleName
+     * ( this arrayList might be empty
+     */
     private ArrayList<ServerSidePlayerDetails> findSameRolesPlayers(RoleNames roleName){
         Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
 
@@ -595,6 +659,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return sameRolePlayers;
     }
 
+    /**
+     *
+     * @return a string that introduces the mayor to doctor introduction
+     */
     private String getMayorToDoctorIntroduction(){
         String mayorToDoctorIntroduction = "the mayor is : ";
         ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
@@ -607,6 +675,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return mayorToDoctorIntroduction;
     }
 
+    /**
+     *
+     * @return a string that introduces the doctor to mayor
+     */
     private String getDoctorToMayorIntroduction(){
         String doctorToMayorIntroduction = "the doctor is : ";
         ServerSidePlayerDetails doctor = findSpecificAliveRolePlayer(RoleNames.townDoctor);
@@ -621,6 +693,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return doctorToMayorIntroduction;
     }
 
+    /**
+     * removes the player that is no longer online ( connected to the server )
+     * and notifies other players that he is not online any more
+     * @param removingPlayer is the player is removed
+     */
     public void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
         System.err.println("! player " + removingPlayer.getUserName() + " is disconnected !") ;
 
@@ -635,6 +712,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * notifies the other players ( alive ones and spectators ), the input player is offline
+     * @param offlinePlayer is the player that is offline
+     */
     private void notifyOthersThePlayerGotOffline(ServerSidePlayerDetails offlinePlayer){
 
         Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
@@ -667,6 +748,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * checks if the game is over or not
+     * @return true if it is over , else false
+     */
     private boolean isGameOver(){
 
         if(getAliveBadGuysNumber() >= getAliveGoodGuysNumber()){
@@ -681,6 +766,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     *
+     * @return true if the town wins the game ( all mafias are dead ), else false
+     */
     private boolean didTownWinTheGame(){
 
         if(getAliveBadGuysNumber() == 0){
@@ -691,6 +780,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     *
+     * @return the number of alive mafia members
+     */
     private int getAliveBadGuysNumber(){
         Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         RoleNames playerRoleName = null;
@@ -708,6 +801,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return badGuysNumber;
     }
 
+    /**
+     *
+     * @return the number of alive town members
+     */
     private int getAliveGoodGuysNumber(){
             Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
             RoleNames playerRoleName = null;
@@ -726,6 +823,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             return goodGuysNumber;
     }
 
+    /**
+     * waits for players to get ready
+     */
     private void waitForAllToGetReady(){
 
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -746,6 +846,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * the night of the game ( mafia kills , doctors save and ...)
+     */
     private void night(){
         nightEvents.resetNightEvents();
 
@@ -770,6 +873,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * the day ( players chat )
+     */
     private void day(){
         tellEveryOneItsChattingTime();
 
@@ -790,6 +896,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         tellEveryOneChatIsOver();
     }
 
+    /**
+     * informs all players , it is chatting time
+     */
     private void tellEveryOneItsChattingTime(){
         Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
@@ -821,6 +930,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * tells all players that the chat is over
+     */
     private void tellEveryOneChatIsOver(){
         Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
@@ -852,6 +964,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * players vote to kill somebody
+     */
     private void voting(){
         Command votingResult;
         Command finalResult;
@@ -875,22 +990,22 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             e.printStackTrace();
         }
 
-        if(votingBox.getMostVotedPlayer() == null){
+        if(votingBox.getTheLynchingPlayer() == null){
             votingResult = new Command(CommandTypes.votingResult , " no body is lynched today");
 
-            sendCommandToOnlineAndSpectatorPlayers(votingResult);
+            sendCommandToAliveAndSpectatorPlayers(votingResult);
 
         }
 
         else {
             // you should ask mayor to cancel the voting or not :
             //re write it
-            ServerSidePlayerDetails mostVotedPlayer = votingBox.getMostVotedPlayer();
+            ServerSidePlayerDetails mostVotedPlayer = votingBox.getTheLynchingPlayer();
             votingResult = new Command(CommandTypes.votingResult ,
                     mostVotedPlayer.getUserName() +
                             " is about to lynch today .");
 
-            sendCommandToOnlineAndSpectatorPlayers(votingResult);
+            sendCommandToAliveAndSpectatorPlayers(votingResult);
 
             if(mayorSaysToLynchOrNot()){
 
@@ -899,7 +1014,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                                 mostVotedPlayer.getUserName() +
                         " is lynched today ; his role was : " +
                                 RoleNames.getRoleAsString(mostVotedPlayer.getRoleName()));
-                sendCommandToOnlineAndSpectatorPlayers(finalResult);
+                sendCommandToAliveAndSpectatorPlayers(finalResult);
 
                 try {
                     mostVotedPlayer.sendCommandToPlayer(new Command(CommandTypes.youAreDead , " you are lynched "));
@@ -908,27 +1023,29 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                     removeOfflinePlayerNotifyOthers(mostVotedPlayer);
                 }
 
-                removePlayerFromOnlinePlayersToSpectators(mostVotedPlayer);
+                removePlayerFromAlivePlayersToSpectators(mostVotedPlayer);
             }
 
             else {
                  finalResult = new Command(CommandTypes.serverToClientString , "the mayor canceled the lynch . ");
-                 sendCommandToOnlineAndSpectatorPlayers(finalResult);
+                 sendCommandToAliveAndSpectatorPlayers(finalResult);
             }
         }
         votingBox.resetTheBox();
     }
 
+    /**
+     * informs all players ( alive or spectator ) to vote
+     */
     private void informAllPlayersItsVotingTime(){
         Command votingTimeInform = new Command(CommandTypes.vote , getAlivePlayersUserNames());
-        sendCommandToOnlineAndSpectatorPlayers(votingTimeInform);
+        sendCommandToAliveAndSpectatorPlayers(votingTimeInform);
     }
 
-//    private void informAllPlayersVotingTimeIsOver(){
-//        Command votingIsOver = new Command(CommandTypes. , null);
-//        sendCommandToOnlineAndSpectatorPlayers(votingIsOver);
-//    }
-
+    /**
+     * asks the mayor to lynch the most voted player or not
+     * @return true if mayor says lynch or if there is no alive mayor , else false
+     */
     private boolean mayorSaysToLynchOrNot(){
         ServerSidePlayerDetails mayor = findSpecificAliveRolePlayer(RoleNames.mayor);
         Command mayorRespond = null;
@@ -965,6 +1082,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return false;
     }
 
+    /**
+     *
+     * @return an arrayList of the names of the alive players' usersNames
+     */
     private ArrayList<String> getAlivePlayersUserNames(){
 
         Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
@@ -979,6 +1100,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return playersNames;
     }
 
+    /**
+     *
+     * @return an arrayList of the names of alive players that are mafia members
+     */
     private ArrayList<String> getAliveBadGuysNames(){
         ArrayList<String> aliveBadGuysNames = new ArrayList<>();
         Iterator<ServerSidePlayerDetails> playersIterator = alivePlayers.iterator();
@@ -996,6 +1121,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     *
+     * @return an arrayList of the names of the players that are town members
+     */
     private ArrayList<String> getAliveGoodGuysNames(){
         ArrayList<String> aliveGoodGuysNames = new ArrayList<>();
         Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
@@ -1011,6 +1140,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return aliveGoodGuysNames;
     }
 
+    /**
+     * sends a message to all players (alive or spectator
+     * @param message is the message is sent to all players
+     */
     public void sendMessageToAll(Message message){
         // sending to alive players :
 
@@ -1049,6 +1182,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * finds a player that has the input username
+     * @param userName is the username of the player
+     * @return the player by this username , if there is none , null
+     */
     private ServerSidePlayerDetails getPlayerByName(String userName){
         Iterator<ServerSidePlayerDetails> iterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
@@ -1078,7 +1216,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return null;
     }
 
-    private synchronized void sendCommandToOnlinePlayers(Command command){
+    /**
+     * sends a command to alive players
+     * @param command the command to send to alive players
+     */
+    private synchronized void sendCommandToAlivePlayers(Command command){
         Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
 
@@ -1097,11 +1239,19 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
-    private void sendCommandToOnlineAndSpectatorPlayers(Command command){
-        sendCommandToOnlinePlayers(command);
+    /**
+     * sends a command to all online players ( alive or spectator )
+     * @param command is the command to send to online players
+     */
+    private void sendCommandToAliveAndSpectatorPlayers(Command command){
+        sendCommandToAlivePlayers(command);
         sendCommandToSpectators(command);
     }
 
+    /**
+     *
+     * @param command
+     */
     private void sendCommandToSpectators(Command command){
         Iterator<ServerSidePlayerDetails> playerIterator = spectators.iterator();
         ServerSidePlayerDetails player = null;
@@ -1118,7 +1268,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
-    private void removePlayerFromOnlinePlayersToSpectators(ServerSidePlayerDetails player){
+    /**
+     * removes a player from alive players to spectators
+     * @param player is the player is removed
+     */
+    private void removePlayerFromAlivePlayersToSpectators(ServerSidePlayerDetails player){
 
         synchronized (alivePlayers){
             alivePlayers.remove(player);
@@ -1130,16 +1284,19 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * informs all players ( except mayor ) it is night , and do your action
+     */
     private void informAllPlayersItsNightDoYourAction(){
 
-        sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.itIsNight , null));
+        sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.itIsNight , null));
 
         Command informWithAllOnlinePlayersNames = new Command(CommandTypes.doYourAction , getAlivePlayersUserNames());
         Command informWithGoodGuyPlayersNames = new Command(CommandTypes.doYourAction , getAliveGoodGuysNames());
         Command informWithBadGuyPlayersNames = new Command(CommandTypes.doYourAction  , getAliveBadGuysNames());
 
-        sendCommandToEveryGoodGuysExceptMayor(informWithAllOnlinePlayersNames);
-        sendCommandToEveryBadGuysExceptLector(informWithGoodGuyPlayersNames);
+        sendCommandToEveryAliveGoodGuysExceptMayor(informWithAllOnlinePlayersNames);
+        sendCommandToEveryAliveBadGuysExceptLector(informWithGoodGuyPlayersNames);
         ServerSidePlayerDetails doctorLectorPlayer = findSpecificAliveRolePlayer(RoleNames.doctorLector);
 
         if (doctorLectorPlayer != null){
@@ -1153,7 +1310,11 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
-    private void sendCommandToEveryGoodGuysExceptMayor(Command command){
+    /**
+     * sends a command to all alive players except mayor
+     * @param command is the command to send
+     */
+    private void sendCommandToEveryAliveGoodGuysExceptMayor(Command command){
 
         sendCommandToSpectators(command);
         Iterator<ServerSidePlayerDetails> alivePlayersIterator = alivePlayers.iterator();
@@ -1167,13 +1328,17 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 } catch (IOException e) {
 //                    e.printStackTrace();
                     alivePlayersIterator.remove();
-                    removePlayerFromOnlinePlayersToSpectators(player);
+                    removePlayerFromAlivePlayersToSpectators(player);
                 }
             }
         }
     }
 
-    private void sendCommandToEveryBadGuysExceptLector(Command command){
+    /**
+     * sends a command to all alive bad guys except doctor lector
+     * @param command is the command to send
+     */
+    private void sendCommandToEveryAliveBadGuysExceptLector(Command command){
         Iterator<ServerSidePlayerDetails> alivePlayersIterator = alivePlayers.iterator();
         ServerSidePlayerDetails player = null;
         while (alivePlayersIterator.hasNext()){
@@ -1191,6 +1356,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * runs the RunnableNightPlayerHandler for those players that have actions to do at night
+     */
     private void runTheNightHandlers(){
 
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -1214,6 +1382,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
     }
 
+    /**
+     * kills those players that mafia and professional shot at and are not saved
+     */
     private void killThoseWhoDiedTonight(){
 
         ArrayList<ServerSidePlayerDetails> playersWhoDieTonight = nightEvents.getThoseWhoDieTonight();
@@ -1227,7 +1398,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 }
                 else {
 
-                    sendCommandToOnlineAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
+                    sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
                             "player " + player.getUserName() + " died tonight"));
 
 //                    if(player.getRoleName() == RoleNames.professional && nightEvents.mustProfessionalDieForWrongShoot()){
@@ -1244,7 +1415,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                             player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "professional shot you"));
                         } catch (IOException e) {
 //                            e.printStackTrace();
-                            removePlayerFromOnlinePlayersToSpectators(player);
+                            removePlayerFromAlivePlayersToSpectators(player);
                         }
 
                     }
@@ -1256,13 +1427,16 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                             removeOfflinePlayerNotifyOthers(player);
                         }
                     }
-                    removePlayerFromOnlinePlayersToSpectators(player);
+                    removePlayerFromAlivePlayersToSpectators(player);
                 }
             }
         }
 
     }
 
+    /**
+     * reveals the detected player for the detective
+     */
     private void revealTheDetectedPlayerForDetective(){
         ServerSidePlayerDetails detective = findSpecificAliveRolePlayer(RoleNames.detective);
 
@@ -1294,6 +1468,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * reveals the dead roles for online players ( alive or spectator )
+     * ( it happens if the tough guy requests it )
+     */
     private void revealDeadRoles(){
         StringBuilder revealStringBuilder = new StringBuilder("the tough guy asked to reveal the dead roles : \n");
         int counter = 0;
@@ -1312,10 +1490,15 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
         Command deadRoleRevealingCommand = new Command(CommandTypes.serverToClientString , revealStringBuilder.toString());
-        sendCommandToOnlineAndSpectatorPlayers(deadRoleRevealingCommand);
+        sendCommandToAliveAndSpectatorPlayers(deadRoleRevealingCommand);
 
     }
 
+    /**
+     *
+     * @param roleName is the roleName , we want to know how many dead ones were
+     * @return the number of those players that have the input roleName
+     */
     private int howManyDeadOnesByRoleName(RoleNames roleName){
         Iterator<ServerSidePlayerDetails> iterator = offlineDeadOnes.iterator();
         ServerSidePlayerDetails playerDetails = null;
@@ -1338,6 +1521,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return counter;
     }
 
+    /**
+     * sends a command to all alive bad guys
+     * @param command is the command is about to be sent to alive bad guys
+     */
     private void sendCommandToAliveBadGuys(Command command){
         Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
         ServerSidePlayerDetails playerDetails = null;
@@ -1356,6 +1543,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * notifies the alive bad guys who the doctor lector saved
+     * @param doctorLectorChoice is the name of the player , the doctor lector saved
+     */
     private void notifyAliveBadGuysTheDoctorLectorChoice(String doctorLectorChoice){
         Command doctorLectorChoiceNotifyCommand = null;
         if(doctorLectorChoice == null){
@@ -1372,6 +1563,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         sendCommandToAliveBadGuys(doctorLectorChoiceNotifyCommand);
     }
 
+    /**
+     * notifies the alive players , who a mafia member choose
+     * @param mafiaChoice is the choice of the mafia member
+     */
     private void notifyAliveBadGuysAMafiaMemberChoice(PlayerAction mafiaChoice){
         Command mafiaChoiceNotifyCommand = null;
 
@@ -1390,6 +1585,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         sendCommandToAliveBadGuys(mafiaChoiceNotifyCommand);
     }
 
+    /**
+     * notifies alive bad guys who the doctor lector have chosen
+     * @param godfatherChoice is the choice of the godfather
+     */
     private void notifyAliveBadGuysTheGodfatherChoice(String godfatherChoice){
         Command godfatherChoiceNotifyCommand = null;
 
@@ -1408,6 +1607,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         sendCommandToAliveBadGuys(godfatherChoiceNotifyCommand);
     }
 
+    /**
+     * @return an arrayList of ServerSidePlayerDetails of good guys ( no matter dead or alive )
+     */
     private ArrayList<ServerSidePlayerDetails> getGoodGuysNoMatterDeadOrAlive(){
         ArrayList<ServerSidePlayerDetails> goodGuysArrayList = new ArrayList<>();
         Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
@@ -1442,6 +1644,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return goodGuysArrayList;
     }
 
+    /**
+     *
+     * @return an arrayList of ServerSidePlayerDetails of bad guys ( no matter dead or alive )
+     */
     private ArrayList<ServerSidePlayerDetails> getBadGuysNoMatterDeadOrAlive(){
         ArrayList<ServerSidePlayerDetails> badGuysArrayList = new ArrayList<>();
         Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
@@ -1477,6 +1683,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return badGuysArrayList;
     }
 
+    /**
+     *
+     * @return true if godfather is alive , else false
+     */
     private boolean isGodfatherAlive(){
         if(findSpecificAliveRolePlayer(RoleNames.godFather) == null){
            return false;
@@ -1484,6 +1694,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return true;
     }
 
+    /**
+     * makes another player the godfather ( when godfather is dead )
+     */
     private void godfatherSubstitution(){
         ArrayList<ServerSidePlayerDetails> aliveBadGuys = getAliveBadGuys();
         Command youAreGodfatherCommand = new Command(CommandTypes.takeYourRole , RoleNames.godFather);
@@ -1519,6 +1732,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     *
+     * @return an arrayList of ServerSidePlayerDetails of bad guy alive players
+     */
     private ArrayList<ServerSidePlayerDetails> getAliveBadGuys(){
         ArrayList<ServerSidePlayerDetails> aliveBadGuys = new ArrayList<>();
         Iterator<ServerSidePlayerDetails> playerIterator = alivePlayers.iterator();
@@ -1533,6 +1750,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         return aliveBadGuys;
     }
 
+    /**
+     * mutes a player ( the therapist choice )
+     * @param mutedPlayer the player who gets muted for tomorrow
+     */
     private void muteTheMutedOne(ServerSidePlayerDetails mutedPlayer){
         Command muteCommand = new Command(CommandTypes.youAreMutedForTomorrow , null);
         try {
@@ -1543,6 +1764,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * if the professional shoots the wrong person , the professional dies instead
+     */
     private void killProfessionalForWrongShoot(){
         Command dieCommand = new Command(CommandTypes.youAreDead ,
                 "! you did wrong shoot last night !");
@@ -1557,7 +1781,12 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
     }
 
+    /**
+     * removes a spectator to offline dead ones
+     * @param player the spectator who
+     */
     private void removeSpectatorToOfflineDeadOnes(ServerSidePlayerDetails player){
+        System.out.println("player : " + player.getUserName() + " is no longer spectating the game .");
         spectators.remove(player);
         offlineDeadOnes.add(player);
     }

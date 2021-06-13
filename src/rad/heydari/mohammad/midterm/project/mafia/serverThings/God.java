@@ -2,14 +2,17 @@ package rad.heydari.mohammad.midterm.project.mafia.serverThings;
 
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
-import rad.heydari.mohammad.midterm.project.mafia.commandThings.Demand;
 import rad.heydari.mohammad.midterm.project.mafia.gameThings.ServerSideGame;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+/**
+ * the server of the game club
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class God {
 //    private static ArrayList<PlayerHandler> playerHandlers;
     private static int playersCount;
@@ -18,6 +21,10 @@ public class God {
     private static ServerSocket serverSocket;
     private static ServerSideGame serverSideGame;
 
+    /**
+     * main method for server
+     * @param args the input args ( not useful for me )
+     */
     public static void main(String[] args) {
 //        playerHandlers = new ArrayList<>();
         playersDetails = new ArrayList<>();
@@ -64,6 +71,9 @@ public class God {
 
     }
 
+    /**
+     * takes the number of the player from the person who starts the server
+     */
     private static void initPlayersCount(){
         System.out.println("please Enter the number of the players : ");
         playersCount = loopedTillRightInput.rangedIntInput(1 , 24);
@@ -73,10 +83,11 @@ public class God {
         serverSideGame.doTheCommand(command);
     }
 
-    public static void doTheDemand(Demand demand){
-
-    }
-
+    /**
+     * takes a socket from the server and makes a ServerSidePlayerDetails for the player
+     * @param socket is the connection socket to the player
+     * @see ServerSidePlayerDetails
+     */
     public static void makeAndAddServerSidePlayerDetails(Socket socket){
 
 
@@ -101,6 +112,10 @@ public class God {
         playersDetails.add(serverSidePlayerDetails);
     }
 
+    /**
+     * removes the player from the game ( player is no longer connected to the server )
+     * @param removingPlayer
+     */
     public static void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
         serverSideGame.removeOfflinePlayerNotifyOthers(removingPlayer);
     }

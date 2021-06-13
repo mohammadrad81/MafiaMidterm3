@@ -2,6 +2,11 @@ package rad.heydari.mohammad.midterm.project.mafia.roleThings;
 
 import java.io.Serializable;
 
+/**
+ * enum for storing the roles of the players ( server side )
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public enum RoleNames implements Serializable {
 
     // mafias :
@@ -18,6 +23,11 @@ public enum RoleNames implements Serializable {
     townDoctor,
     detective;
 
+    /**
+     *
+     * @param roleName is the roleName of the player
+     * @return the role of the player as a string
+     */
     public static String getRoleAsString(RoleNames roleName){
         if(roleName == godFather){
             return "godfather";
@@ -54,6 +64,11 @@ public enum RoleNames implements Serializable {
         }
     }
 
+    /**
+     * checks if the role is an evil role or not
+     * @param roleName is the roleName of the player
+     * @return true if the player is evil , else false
+     */
     public static boolean isEvil(RoleNames roleName){
         if(roleName == mafia || roleName == godFather || roleName == doctorLector){
             return true;

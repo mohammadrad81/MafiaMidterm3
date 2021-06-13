@@ -5,7 +5,11 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerD
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-
+/**
+ * is a box to store the votes of players
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class VotingBox {
 
     private HashMap<ServerSidePlayerDetails , Integer> playerCountOfVotesHashMap;
@@ -30,23 +34,34 @@ public class VotingBox {
         }
     }
 
-    public ServerSidePlayerDetails getMostVotedPlayer (){
+    /**
+     * if at least half of the players voted the most voted player
+     * and there is only one most voted player
+     * the most voted player gets lynched
+     * else no one gets lynched
+     * @return the person who is about to lynch
+     */
+    public ServerSidePlayerDetails getTheLynchingPlayer(){
          Iterator<ServerSidePlayerDetails> iterator = playerCountOfVotesHashMap.keySet().iterator();
          ServerSidePlayerDetails playerDetails = null;
          int mostVotedNumber = getMostVotedNumber();
-
-         if (isThereOnlyOneMostVotedPlayer(mostVotedNumber)){
-             while (iterator.hasNext()){
-                 playerDetails = iterator.next();
-                 if(playerCountOfVotesHashMap.get(playerDetails) == mostVotedNumber){
-                    return playerDetails;
+         if((2 * mostVotedNumber) >= playerCountOfVotesHashMap.size()) {
+             if (isThereOnlyOneMostVotedPlayer(mostVotedNumber)) {
+                 while (iterator.hasNext()) {
+                     playerDetails = iterator.next();
+                     if (playerCountOfVotesHashMap.get(playerDetails) == mostVotedNumber) {
+                         return playerDetails;
+                     }
                  }
              }
          }
-
          return null;
     }
 
+    /**
+     *
+     * @return the votes of the most voted player
+     */
     private int getMostVotedNumber(){
         int theMostVote = 0;
 
@@ -61,6 +76,11 @@ public class VotingBox {
         return theMostVote;
     }
 
+    /**
+     * checks if there is only one most voted player
+     * @param mostVote is the most number of votes to a player
+     * @return  true , if there is only one most voted player , else false
+     */
     private boolean isThereOnlyOneMostVotedPlayer(int mostVote){
         Iterator<ServerSidePlayerDetails> iterator = playerCountOfVotesHashMap.keySet().iterator();
         ServerSidePlayerDetails player = null;
@@ -81,6 +101,9 @@ public class VotingBox {
         }
     }
 
+    /**
+     * resets the box
+     */
     public void resetTheBox(){
         playerCountOfVotesHashMap = new HashMap<>();
     }

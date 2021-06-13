@@ -7,6 +7,10 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+/** a class for the client side of the mafia game
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 
 public class ClientSidePlayer {
 
@@ -24,6 +28,10 @@ public class ClientSidePlayer {
 
     private static ClientSideGame clientSideGame;
 
+    /**
+     * the main method for starting the game
+     * @param args is the input arguments ( no usage )
+     */
     public static void main(String[] args) {
 
         loopedTillRightInput = new LoopedTillRightInput();
@@ -37,9 +45,9 @@ public class ClientSidePlayer {
 
         waitTillGetConnected();
 
-        System.out.println("connected.");
-
         initStreams();
+
+        System.out.println("connected.");
 
         ClientMafiaGameLogic clientMafiaGameLogic = new ClientMafiaGameLogic(socket , objectInputStream , objectOutputStream);
 
@@ -47,7 +55,10 @@ public class ClientSidePlayer {
 
     }
 
-
+    /**
+     * if the server is not still turned on , the client waits for the server and every 0.2 second ,
+     * checks the server is on or not , if it is on , connects to it
+     */
     public static void waitTillGetConnected(){
         while (socket == null){
             try {
@@ -71,6 +82,10 @@ public class ClientSidePlayer {
             }
         }
     }
+
+    /**
+     * inits the streams of the connection
+     */
 
     public static void initStreams(){
         try {

@@ -13,18 +13,29 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
+/**
+ * class for the role , TownDoctor
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class TownDoctor extends Actionable implements GoodGuys {
 
     private boolean hasSavedHisSelf;
-//    private LoopedTillRightInput loopedTillRightInput;
-
+    /**
+     * constructor for the role
+     * @param objectInputStream the InputStream to communicate with server
+     * @param objectOutputStream the outputStream to communicate with server
+     * @param userName is the username of the player
+     * @param inputProducer is the inputProducer of the player
+     */
     public TownDoctor(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream , String userName , InputProducer inputProducer) {
         super(objectInputStream, objectOutputStream , "town doctor" , userName , inputProducer);
-//        loopedTillRightInput = new LoopedTillRightInput();
 
     }
-
+    /**
+     * the action of the player
+     * @param command the command that contains the needed things for the action
+     */
     @Override
     public void action(Command command) {
         startNow();

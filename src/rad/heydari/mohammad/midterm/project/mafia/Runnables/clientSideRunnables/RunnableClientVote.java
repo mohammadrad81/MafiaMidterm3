@@ -11,6 +11,11 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+/**
+ * runnable class for player to vote
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class RunnableClientVote implements Runnable{
     private String voterName;
     private ObjectOutputStream objectOutputStream ;
@@ -20,19 +25,32 @@ public class RunnableClientVote implements Runnable{
     private InputProducer inputProducer;
     private long startSecond;
     private long timeLimit;
-    public RunnableClientVote(String voterName ,ArrayList<String> otherPlayersNames , ObjectOutputStream objectOutputStream , InputProducer inputProducer){
+
+    /**
+     * simple constructor
+     * @param voterName is the name of the voter
+     * @param otherPlayersNames is the arrayList of other players
+     * @param objectOutputStream is the outputStream for communication to server
+     * @param inputProducer is the inputProducer of the client ( the player )
+     * @see InputProducer
+     */
+    public RunnableClientVote(String voterName ,
+                              ArrayList<String> otherPlayersNames ,
+                              ObjectOutputStream objectOutputStream ,
+                              InputProducer inputProducer){
         this.voterName = voterName;
         this.otherPlayersNames = otherPlayersNames;
         this.objectOutputStream = objectOutputStream;
-//        this.loopedTillRightInput = new LoopedTillRightInput();
-//        this.bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         this.inputProducer = inputProducer;
         this.timeLimit = 60;
     }
 
-
+    /**
+     * the run method for voting of the player
+     */
     @Override
     public void run() {
+        otherPlayersNames.remove(voterName);
         startNow();
         boolean correctlyDone = false;
         int input = 0;
@@ -84,7 +102,9 @@ public class RunnableClientVote implements Runnable{
             }
 
         }while (!correctlyDone && !isTimeOver(timeLimit));
-
+        /*
+         * if player didn't vote , by default his vote is considered as no one
+         */
         if(! correctlyDone){
             voteCommand = new Command(CommandTypes.iVote , new Vote(voterName , null));
         }
@@ -97,10 +117,18 @@ public class RunnableClientVote implements Runnable{
 
     }
 
+    /**
+     * saves the start moment of the game
+     */
     public void startNow(){
         startSecond = java.time.Instant.now().getEpochSecond();
     }
 
+    /**
+     * checks if the time is over or not
+     * @param timeLimit is the limitation for voting
+     * @return true , if the time is over , else false
+     */
     public boolean isTimeOver(long timeLimit){
         long nowSecond = java.time.Instant.now().getEpochSecond();
         if(nowSecond >= startSecond + timeLimit){

@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
+/**
+ * a class to store the events in night and conclude from them
+ * @author Mohammad Heydari Rad
+ * @since 6/11/2021
+ */
 public class NightEvents {
 
     private HashMap<ServerSidePlayerDetails , Integer> mafiaVictimsIntWeightHashMap;
@@ -22,6 +26,9 @@ public class NightEvents {
     private int howManyTimesShowedDeadOnes = 0;
     private ServerSidePlayerDetails detectiveWantsToDetect;
 
+    /**
+     * constructor , initializes the events
+     */
     public NightEvents(){
         this.mafiaVictimsIntWeightHashMap = new HashMap<>();
         this.townDoctorSaves = new HashSet<>();
@@ -29,6 +36,11 @@ public class NightEvents {
         this.dieTonight = new ArrayList<>();
     }
 
+    /**
+     * mafia takes a victim
+     * @param victim is the person the mafia member chooses
+     * @param isGodFatherChoice if the godfather chooses , true , else , false
+     */
     public void mafiaTakesVictim(ServerSidePlayerDetails victim, Boolean isGodFatherChoice){
 
         if(isGodFatherChoice){
@@ -41,18 +53,34 @@ public class NightEvents {
 
     }
 
+    /**
+     * town doctor saves a player
+     * @param playerDetails is the saving player
+     */
     public void townDoctorSave(ServerSidePlayerDetails playerDetails){
         townDoctorSaves.add(playerDetails);
     }
 
+    /**
+     * doctor lector saves a player
+     * @param playerDetails is the saving player
+     */
     public void lectorSave(ServerSidePlayerDetails playerDetails){
         lectorSaves.add(playerDetails);
     }
 
+    /**
+     * therapist mutes a player
+     * @param mutedOne is the muted player
+     */
     public void mute(ServerSidePlayerDetails mutedOne){
         this.mutedOne = mutedOne;
     }
 
+    /**
+     * professional shoots a player
+     * @param professionalVictim is the player , the professional shoots
+     */
     public void professionalShoots(ServerSidePlayerDetails professionalVictim){
         if(professionalVictim == null){
             professionalDidWrongShoot = false;
@@ -66,6 +94,9 @@ public class NightEvents {
         }
     }
 
+    /**
+     * tough Guy wants the dead roles to be revealed for everyone
+     */
     public void toughGuySaysShowDeadRoles(){
         if(howManyTimesShowedDeadOnes < 2){
             showDeadRoles = true;
@@ -73,6 +104,10 @@ public class NightEvents {
         }
     }
 
+    /**
+     *
+     * @return an arrayList of those who must die tonight , ( not handling the wrong shoot of the professional )
+     */
     public ArrayList<ServerSidePlayerDetails> getThoseWhoDieTonight(){
 
         ServerSidePlayerDetails mafiaVictim = getMafiaFinalChoice();
@@ -87,6 +122,10 @@ public class NightEvents {
         return dieTonight;
     }
 
+    /**
+     *
+     * @return the final choice of the mafia
+     */
     private ServerSidePlayerDetails getMafiaFinalChoice (){
         int maxWeight = 0;
         ServerSidePlayerDetails finalChoice = null;
@@ -102,14 +141,25 @@ public class NightEvents {
         return finalChoice;
     }
 
+    /**
+     * if the professional shoots the wrong guy , he dies
+     * @return true if the shot was wrong , else false
+     */
     public boolean mustProfessionalDieForWrongShoot(){
         return professionalDidWrongShoot;
     }
 
+    /**
+     *
+     * @return true if the tough guy wants to reveal dead roles , else false
+     */
     public boolean isShowDeadRoles() {
         return showDeadRoles;
     }
 
+    /**
+     * resets the events
+     */
     public void resetNightEvents(){
         this.professionalDidWrongShoot = false;
         this.dieTonight = new ArrayList<>();
@@ -119,21 +169,30 @@ public class NightEvents {
         this.mafiaVictimsIntWeightHashMap = new HashMap<>();
         this.showDeadRoles = false;
         this.mutedOne = null;
+        this.detectiveWantsToDetect = null;
     }
 
+    /**
+     *
+     * @param whoDetectiveWantsToDetect is the player , the detective wants to detect
+     */
     public void setWhoDetectiveWantsToDetect(ServerSidePlayerDetails whoDetectiveWantsToDetect){
         this.detectiveWantsToDetect = whoDetectiveWantsToDetect;
     }
 
+    /**
+     *
+     * @return the player , the detective wants to detect
+     */
     public ServerSidePlayerDetails getWhoDetectiveWantsToDetect() {
         return detectiveWantsToDetect;
     }
 
+    /**
+     *
+     * @return the muted player
+     */
     public ServerSidePlayerDetails getMutedOne() {
         return mutedOne;
-    }
-
-    public void setMutedOne(ServerSidePlayerDetails mutedOne) {
-        this.mutedOne = mutedOne;
     }
 }
