@@ -13,6 +13,7 @@ import rad.heydari.mohammad.midterm.project.mafia.roleThings.RoleNames;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.Vote;
 import rad.heydari.mohammad.midterm.project.mafia.votingThings.VotingBox;
 
+import javax.swing.plaf.BorderUIResource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -696,6 +697,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     /**
      * removes the player that is no longer online ( connected to the server )
      * and notifies other players that he is not online any more
+     * if by the player's absence , the game is over , the game ends
      * @param removingPlayer is the player is removed
      */
     public void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
@@ -708,6 +710,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         notifyOthersThePlayerGotOffline(removingPlayer);
 
+        if(isGameOver()){
+            gameEnding();
+        }
 
 
     }
@@ -881,6 +886,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * the day ( players chat )
      */
     private void day(){
+        informAllWhoAreAlive();
         tellEveryOneItsChattingTime();
 
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -1796,5 +1802,29 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         System.out.println("player : " + player.getUserName() + " is no longer spectating the game .");
         spectators.remove(player);
         offlineDeadOnes.add(player);
+    }
+
+    /**
+     * @return a string which contains the names of the alive players
+     */
+    private String getAlivePlayersNamesAsString(){
+        Iterator<ServerSidePlayerDetails> playerDetailsIterator = alivePlayers.iterator();
+        StringBuilder alivePlayersNamesAsString = new StringBuilder();
+        int counter = 1;
+        while (playerDetailsIterator.hasNext()){
+            alivePlayersNamesAsString.append(counter+ "- " + playerDetailsIterator.next().getUserName() + "\n");
+            counter++;
+        }
+        return alivePlayersNamesAsString.toString();
+    }
+
+    /**
+     * sends a string , contains the names of alive players in the game
+     * to all alive and spectators
+     */
+    private void informAllWhoAreAlive(){
+        String alivePlayersNamesString = "ALIVE PLAYERS :\n" + getAlivePlayersNamesAsString();
+        Command alivePlayersInformCommand = new Command(CommandTypes.serverToClientString , alivePlayersNamesString);
+        sendCommandToAliveAndSpectatorPlayers(alivePlayersInformCommand);
     }
 }
