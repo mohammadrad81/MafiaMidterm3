@@ -34,6 +34,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
     private VotingBox votingBox;
     private NightEvents nightEvents;
     private boolean toughGuyIsHurt;
+    boolean isInMiddleOfGame;
 
     public ServerMafiaGameLogic(ArrayList<ServerSidePlayerDetails> alivePlayers){
         this.spectators = new ArrayList<>();
@@ -67,8 +68,9 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         givePlayersTheirRoles();
 
-        while (! isGameOver()){ // it should be !isGameOver()
+        isInMiddleOfGame = true;
 
+        while (! isGameOver()){
             if(! playersHaveBeenIntroduced){
                 introductionNight();
                 playersHaveBeenIntroduced = true;
@@ -303,6 +305,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             }
             counter ++;
         }
+        shuffleThePlayers();
     }
 
     /**
@@ -710,7 +713,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         notifyOthersThePlayerGotOffline(removingPlayer);
 
-        if(isGameOver()){
+        if(isGameOver() && isInMiddleOfGame){
             gameEnding();
         }
 
@@ -1718,6 +1721,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             try {
                 aliveBadGuys.get(0).sendCommandToPlayer(youAreGodfatherCommand);
                 aliveBadGuys.get(0).setRoleName(RoleNames.godFather);
+                System.out.println("GODFATHER SUBSTITUTE : " + aliveBadGuys.get(0).getUserName());
             } catch (IOException e) {
 //                e.printStackTrace();
                 removeOfflinePlayerNotifyOthers(aliveBadGuys.get(0));
@@ -1731,10 +1735,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 if(player.getRoleName() != RoleNames.doctorLector){
                     try {
                         player.sendCommandToPlayer(youAreGodfatherCommand);
+                        System.out.println("GODFATHER SUBSTITUTE : " + player.getUserName());
                         player.setRoleName(RoleNames.godFather);
                         break;
                     } catch (IOException e) {
-//                        e.printStackTrace();
                         removeOfflinePlayerNotifyOthers(player);
                         godfatherSubstitution();
                         return;
