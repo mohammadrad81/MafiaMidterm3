@@ -492,8 +492,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         try {
             objectOutputStream.writeObject(new Command(CommandTypes.imReady , null));
         } catch (IOException e) {
-            e.printStackTrace();
+            disConnection();
         }
+        System.out.println("waiting for other players to get ready ...");
     }
 
     /**
