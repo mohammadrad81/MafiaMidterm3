@@ -391,12 +391,10 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 if(playerAction.getNameOfThePlayerActionHappensTo() == null){
                     System.out.println("town doctor saves nobody tonight .");
                 }
-                else {
+                else{
                     System.out.println("town doctor saves player : " +
                             playerAction.getNameOfThePlayerActionHappensTo() +
                             " tonight .");
-                }
-                if(playerAction.getNameOfThePlayerActionHappensTo() != null){
                     synchronized (nightEvents){
                         nightEvents.townDoctorSave(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
                     }
@@ -404,9 +402,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.doctorLectorSave){
                 if(playerAction.getNameOfThePlayerActionHappensTo() == null){
-                    System.out.println("doctor lector saves player : " +
-                            playerAction.getNameOfThePlayerActionHappensTo() +
-                            " tonight .");
+                    System.out.println("doctor lector saves nobody tonight .");
                 }
                 else {
                     System.out.println("doctor lector saves player : " +
@@ -423,21 +419,38 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.detect) {
-                System.out.println("the detective wants to detect player " + playerAction.getNameOfThePlayerActionHappensTo());
-                synchronized (nightEvents){
-                    nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("the detective wants to detect nobody .");
                 }
+                else {
+                    System.out.println("the detective wants to detect player : " +
+                            playerAction.getNameOfThePlayerActionHappensTo());
+                    synchronized (nightEvents){
+                        nightEvents.setWhoDetectiveWantsToDetect(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                    }
+                }
+
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.mute){
-                System.out.println("therapist mutes player : " +playerAction.getNameOfThePlayerActionHappensTo());
-                synchronized (nightEvents){
-                    nightEvents.mute(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("the therapist mutes nobody .");
+                }
+                else {
+                    System.out.println("therapist mutes player : " +playerAction.getNameOfThePlayerActionHappensTo());
+                    synchronized (nightEvents){
+                        nightEvents.mute(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                    }
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.professionalShoots){
-                System.out.println("the professional shoots player : " + playerAction.getNameOfThePlayerActionHappensTo());
-                synchronized (nightEvents){
-                    nightEvents.professionalShoots(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                if(playerAction.getNameOfThePlayerActionHappensTo() == null){
+                    System.out.println("the professional shoots nobody .");
+                }
+                else {
+                    System.out.println("the professional shoots player : " + playerAction.getNameOfThePlayerActionHappensTo());
+                    synchronized (nightEvents){
+                        nightEvents.professionalShoots(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()));
+                    }
                 }
             }
         }
@@ -1414,7 +1427,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 else {
 
                     sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
-                            "player " + player.getUserName() + " died tonight"));
+                            "ATTENTION : ! player " + player.getUserName() + " died tonight !"));
 
 //                    if(player.getRoleName() == RoleNames.professional && nightEvents.mustProfessionalDieForWrongShoot()){
 //                        try {
