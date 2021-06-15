@@ -1052,12 +1052,13 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
                 try {
                     mostVotedPlayer.sendCommandToPlayer(new Command(CommandTypes.youAreDead , " you are lynched "));
+                    removePlayerFromAlivePlayersToSpectators(mostVotedPlayer);
                 } catch (IOException e) {
 //                    e.printStackTrace();
                     removeOfflinePlayerNotifyOthers(mostVotedPlayer);
                 }
 
-                removePlayerFromAlivePlayersToSpectators(mostVotedPlayer);
+
             }
 
             else {
@@ -1448,21 +1449,22 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
                         try {
                             player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "professional shot you"));
+                            removePlayerFromAlivePlayersToSpectators(player);
                         } catch (IOException e) {
 //                            e.printStackTrace();
-                            removePlayerFromAlivePlayersToSpectators(player);
+                            removeOfflinePlayerNotifyOthers(player);
                         }
 
                     }
                     else {
                         try {
                             player.sendCommandToPlayer(new Command(CommandTypes.youAreDead , "mafia killed you"));
+                            removePlayerFromAlivePlayersToSpectators(player);
                         } catch (IOException e) {
 //                            e.printStackTrace();
                             removeOfflinePlayerNotifyOthers(player);
                         }
                     }
-                    removePlayerFromAlivePlayersToSpectators(player);
                 }
             }
         }
