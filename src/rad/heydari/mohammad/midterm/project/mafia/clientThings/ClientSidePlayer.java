@@ -1,6 +1,7 @@
 package rad.heydari.mohammad.midterm.project.mafia.clientThings;
 
 import rad.heydari.mohammad.midterm.project.mafia.InputThings.LoopedTillRightInput;
+import rad.heydari.mohammad.midterm.project.mafia.colors.ColorCodes;
 import rad.heydari.mohammad.midterm.project.mafia.gameThings.ClientSideGame;
 
 import java.io.*;
@@ -37,17 +38,23 @@ public class ClientSidePlayer {
         loopedTillRightInput = new LoopedTillRightInput();
 
 
-        System.out.println("! WELCOME TO RAD GAME CLUB !");
-        System.out.println("PLEASE ENTER THE PORT : (8989 FOR MAFIA GAME)");
+        System.out.println(ColorCodes.ANSI_CYAN +
+                "! WELCOME TO RAD GAME CLUB !" +
+                ColorCodes.ANSI_RESET);
+        System.out.println(ColorCodes.ANSI_GREEN +
+                "PLEASE ENTER THE PORT : (8989 FOR MAFIA GAME)" +
+                ColorCodes.ANSI_RESET);
         port = loopedTillRightInput.rangedIntInput(MINIMUM_PORT_NUMBER , MAXIMUM_PORT_NUMBER);
 
-        System.out.println("waiting to get connected ...");
+        System.out.println(ColorCodes.ANSI_YELLOW +
+                "waiting to get connected ..." +
+                ColorCodes.ANSI_RESET);
 
         waitTillGetConnected();
 
         initStreams();
 
-        System.out.println("connected.");
+        System.out.println(ColorCodes.ANSI_GREEN + "connected." + ColorCodes.ANSI_RESET);
 
         ClientMafiaGameLogic clientMafiaGameLogic = new ClientMafiaGameLogic(socket , objectInputStream , objectOutputStream);
 
