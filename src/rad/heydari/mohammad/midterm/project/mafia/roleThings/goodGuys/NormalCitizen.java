@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
  * class for the role , NormalCitizen
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class NormalCitizen implements GoodGuys {
     private ObjectOutputStream objectOutputStream;

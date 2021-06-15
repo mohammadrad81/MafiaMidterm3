@@ -4,6 +4,7 @@ import java.io.Serializable;
 /** is a class for communication between server and client
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class Command implements Serializable {
     private CommandTypes title;

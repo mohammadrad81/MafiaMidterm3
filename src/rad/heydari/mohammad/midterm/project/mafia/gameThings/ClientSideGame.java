@@ -4,6 +4,7 @@ import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 /** an interface of the game on the client side
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  * @see Command
  */
 public interface ClientSideGame {

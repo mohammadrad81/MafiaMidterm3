@@ -1,5 +1,12 @@
 package rad.heydari.mohammad.midterm.project.mafia.colors;
 
+/**
+ * class to store ansi color codes
+ * to use them
+ * @author Mohammad Heydari Rad
+ * @since 6/15/2021
+ * @version 1.0
+ */
 public class ColorCodes {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";

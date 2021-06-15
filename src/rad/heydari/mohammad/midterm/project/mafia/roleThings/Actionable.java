@@ -10,6 +10,7 @@ import java.util.ArrayList;
  * class for the role , Actionable
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public abstract class Actionable implements Role {
     private String userName;

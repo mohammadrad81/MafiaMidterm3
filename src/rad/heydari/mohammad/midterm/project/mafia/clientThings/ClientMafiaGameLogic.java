@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * class for the game logic of the mafia game
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  * @see Command
  * @see CommandTypes
  * @see InputProducer

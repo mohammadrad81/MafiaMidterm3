@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * runnable class for player to vote
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class RunnableClientVote implements Runnable{
     private String voterName;

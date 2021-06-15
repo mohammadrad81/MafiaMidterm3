@@ -5,6 +5,7 @@ import rad.heydari.mohammad.midterm.project.mafia.InputThings.InputProducer;
  * a runnable that constantly takes inputs from the client
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  * @see InputProducer
  */
 public class RunnableInputTaker implements Runnable{

@@ -17,6 +17,7 @@ import java.util.Scanner;
  * class for the role , Therapist
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class Therapist extends Actionable implements GoodGuys {
     /**

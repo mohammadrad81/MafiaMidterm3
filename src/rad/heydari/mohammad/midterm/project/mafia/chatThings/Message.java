@@ -7,6 +7,7 @@ import java.io.Serializable;
  * this is an immutable class
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class Message implements Serializable {
     private String senderName;

@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * the class for mafia game logic
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class ServerMafiaGameLogic implements ServerSideGame {
     private ArrayList<ServerSidePlayerDetails> alivePlayers;

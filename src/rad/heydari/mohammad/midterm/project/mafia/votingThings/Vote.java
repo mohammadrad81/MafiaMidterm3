@@ -6,6 +6,7 @@ import java.io.Serializable;
  * ( this is immutable )
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class Vote implements Serializable {
 

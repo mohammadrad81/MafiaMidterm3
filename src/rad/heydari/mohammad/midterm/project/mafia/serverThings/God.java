@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * the server of the game club
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class God {
 //    private static ArrayList<PlayerHandler> playerHandlers;

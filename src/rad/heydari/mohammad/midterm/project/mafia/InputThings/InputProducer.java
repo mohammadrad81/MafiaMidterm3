@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * the class for store , consume the inputs of the client ( technically a buffer )
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class InputProducer {
 

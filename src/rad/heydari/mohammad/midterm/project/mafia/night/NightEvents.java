@@ -12,6 +12,7 @@ import java.util.Iterator;
  * a class to store the events in night and conclude from them
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class NightEvents {
 

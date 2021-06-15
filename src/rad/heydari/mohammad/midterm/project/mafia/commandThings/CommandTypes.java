@@ -4,6 +4,7 @@ import java.io.Serializable;
 /** an enum for the type of the commands
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public enum CommandTypes implements Serializable {
 

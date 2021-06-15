@@ -10,6 +10,7 @@ import java.util.Scanner;
  * a class for working with file and saving messages
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class FileUtils {
 

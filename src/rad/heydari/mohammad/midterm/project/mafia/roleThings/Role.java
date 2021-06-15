@@ -5,6 +5,7 @@ import java.io.Serializable;
  * class for storing the roles of the players (client side)
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 
 public interface Role extends Serializable {

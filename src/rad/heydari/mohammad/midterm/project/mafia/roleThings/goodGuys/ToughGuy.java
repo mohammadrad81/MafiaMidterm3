@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
  * class for the role , ToughGuy
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class ToughGuy extends Actionable implements GoodGuys {
     private int askedToShowDeadRoles;

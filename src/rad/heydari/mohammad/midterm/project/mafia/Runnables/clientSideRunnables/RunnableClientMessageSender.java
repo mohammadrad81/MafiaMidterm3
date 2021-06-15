@@ -17,6 +17,7 @@ import java.util.Locale;
  * a class for the player to send his messages during the chat
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class RunnableClientMessageSender implements Runnable{
     private String userName;

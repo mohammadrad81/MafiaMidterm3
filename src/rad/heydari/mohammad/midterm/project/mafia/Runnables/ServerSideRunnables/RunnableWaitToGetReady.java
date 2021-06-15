@@ -12,6 +12,7 @@ import java.net.SocketException;
  * runnable class to wait for the player to get ready to play
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class RunnableWaitToGetReady implements Runnable{
 

@@ -6,6 +6,7 @@ import java.io.Serializable;
  * enum for storing the roles of the players ( server side )
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public enum RoleNames implements Serializable {
 

@@ -17,6 +17,7 @@ import java.util.Scanner;
  * a class for godfather role
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class GodFather extends Actionable implements GoodGuys {
     /**

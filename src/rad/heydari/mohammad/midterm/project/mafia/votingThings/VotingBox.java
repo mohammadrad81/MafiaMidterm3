@@ -9,6 +9,7 @@ import java.util.Set;
  * is a box to store the votes of players
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class VotingBox {
 

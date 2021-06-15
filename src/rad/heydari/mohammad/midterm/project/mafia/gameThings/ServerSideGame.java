@@ -6,6 +6,7 @@ import rad.heydari.mohammad.midterm.project.mafia.serverThings.ServerSidePlayerD
  * the interface of the game on the server side
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public interface ServerSideGame {
 

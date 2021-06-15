@@ -12,6 +12,7 @@ import java.io.IOException;
  * server side
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class RunnableNightPlayerHandler implements Runnable{
 

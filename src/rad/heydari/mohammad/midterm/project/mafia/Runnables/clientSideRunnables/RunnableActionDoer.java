@@ -7,6 +7,7 @@ import rad.heydari.mohammad.midterm.project.mafia.roleThings.Actionable;
  * runnable for player to do the action of his role
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class RunnableActionDoer implements Runnable{
     private Actionable actionable;

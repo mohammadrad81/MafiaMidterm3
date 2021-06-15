@@ -16,6 +16,7 @@ import java.util.Scanner;
  * class for the role , Detective
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  */
 public class Detective extends Actionable {
     /**

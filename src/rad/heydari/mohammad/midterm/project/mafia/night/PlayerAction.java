@@ -5,6 +5,7 @@ import java.io.Serializable;
  * a class for actions of the players
  * @author Mohammad Heydari Rad
  * @since 6/11/2021
+ * @version 1.0
  * @see PlayersActionTypes
  */
 public class PlayerAction implements Serializable {
