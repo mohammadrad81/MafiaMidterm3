@@ -85,7 +85,7 @@ public class NightEvents {
         if(professionalVictim == null){
             professionalDidWrongShoot = false;
         }
-        if(RoleNames.isEvil(professionalVictim.getRoleName())){
+        else if(RoleNames.isEvil(professionalVictim.getRoleName())){
             professionalShoots = professionalVictim;
             professionalDidWrongShoot = false;
         }
