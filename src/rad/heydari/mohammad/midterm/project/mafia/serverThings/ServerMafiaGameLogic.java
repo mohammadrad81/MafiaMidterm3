@@ -1651,7 +1651,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         while (playerIterator.hasNext()){
             player = playerIterator.next();
 
-            if(! RoleNames.isEvil(player.getRoleName())){
+            if(player.getRoleName() != null && ! RoleNames.isEvil(player.getRoleName())){
                 goodGuysArrayList.add(player);
             }
 
@@ -1661,7 +1661,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         while (playerIterator.hasNext()){
             player = playerIterator.next();
-            if(!RoleNames.isEvil(player.getRoleName())){
+            if(player.getRoleName() != null && ! RoleNames.isEvil(player.getRoleName())){
                 goodGuysArrayList.add(player);
             }
         }
@@ -1670,7 +1670,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         while (playerIterator.hasNext()){
             player = playerIterator.next();
-            if(!RoleNames.isEvil(player.getRoleName())){
+            if(player.getRoleName() != null && !RoleNames.isEvil(player.getRoleName())){
                 goodGuysArrayList.add(player);
             }
         }
@@ -1690,7 +1690,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         while (playerIterator.hasNext()){
             player = playerIterator.next();
 
-            if(RoleNames.isEvil(player.getRoleName())){
+            if(player.getRoleName() != null && RoleNames.isEvil(player.getRoleName())){
                 badGuysArrayList.add(player);
             }
 
@@ -1700,7 +1700,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         while (playerIterator.hasNext()){
             player = playerIterator.next();
-            if(RoleNames.isEvil(player.getRoleName())){
+            if(player.getRoleName() != null && RoleNames.isEvil(player.getRoleName())){
                 badGuysArrayList.add(player);
             }
         }
@@ -1709,7 +1709,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
 
         while (playerIterator.hasNext()){
             player = playerIterator.next();
-            if(RoleNames.isEvil(player.getRoleName())){
+            if(player.getRoleName() != null && RoleNames.isEvil(player.getRoleName())){
                 badGuysArrayList.add(player);
             }
         }
