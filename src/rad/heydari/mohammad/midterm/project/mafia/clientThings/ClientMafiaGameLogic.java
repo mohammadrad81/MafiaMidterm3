@@ -285,7 +285,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                     }
 
                 }
-                System.out.println(ColorCodes.ANSI_RED + receivingCommand.getCommandNeededThings() + ColorCodes.ANSI_RESET);//printing voting result
+                System.out.println(ColorCodes.ANSI_RED +
+                        receivingCommand.getCommandNeededThings() +
+                        ColorCodes.ANSI_RESET);//printing voting result
             }
 
         }while (receivingCommand.getType() != CommandTypes.votingResult);
@@ -331,7 +333,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
      * prints the role of the player
      */
     public void printTheClientsRole(){
-        System.out.println(ColorCodes.ANSI_YELLOW + "your role is : " + role.getRoleString() + ColorCodes.ANSI_RESET);
+        System.out.println(ColorCodes.ANSI_YELLOW +
+                "your role is : " + role.getRoleString() +
+                ColorCodes.ANSI_RESET);
     }
 
     /**

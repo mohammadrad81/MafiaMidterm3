@@ -1815,6 +1815,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 professional.sendCommandToPlayer(dieCommand);
                 sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
                         "ATTENTION : ! player " + professional.getUserName() + " died last night !"));
+                removePlayerFromAlivePlayersToSpectators(professional);
             } catch (IOException e) {
 //                e.printStackTrace();
                 removeOfflinePlayerNotifyOthers(professional);
