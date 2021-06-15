@@ -363,25 +363,24 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                             " says we better kill " +
                             playerAction.getNameOfThePlayerActionHappensTo());
 
-                    notifyAliveBadGuysAMafiaMemberChoice(playerAction);
-                    synchronized (nightEvents){
-                        nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
-                                false);
-                    }
+                }
+
+                notifyAliveBadGuysAMafiaMemberChoice(playerAction);
+                synchronized (nightEvents){
+                    nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
+                            false);
                 }
             }
             else if(playerAction.getPlayerActionType() == PlayersActionTypes.godFatherVictim){
-                notifyAliveBadGuysTheGodfatherChoice(playerAction.getNameOfThePlayerActionHappensTo());
                 if(playerAction.getNameOfThePlayerActionHappensTo() == null){
                     System.out.println("godfather says we kill nobody tonight .");
                 }
-
                 else{
                     System.out.println("godfather says we kill " +
                             playerAction.getNameOfThePlayerActionHappensTo() +
                             " tonight .");
                 }
-
+                notifyAliveBadGuysTheGodfatherChoice(playerAction.getNameOfThePlayerActionHappensTo());
                 synchronized (nightEvents){
                     nightEvents.mafiaTakesVictim(getPlayerByName(playerAction.getNameOfThePlayerActionHappensTo()),
                             true);
@@ -716,7 +715,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * if by the player's absence , the game is over , the game ends
      * @param removingPlayer is the player is removed
      */
-    public void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
+    public synchronized void removeOfflinePlayerNotifyOthers(ServerSidePlayerDetails removingPlayer){
         System.err.println("! player " + removingPlayer.getUserName() + " is disconnected !") ;
 
         if(alivePlayers.contains(removingPlayer)){
@@ -871,6 +870,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * the night of the game ( mafia kills , doctors save and ...)
      */
     private void night(){
+        System.out.println("! NIGHT !");
+        sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString , "! NIGHT !"));
         if(nightEvents.getMutedOne() != null){
             nightEvents.getMutedOne().setMuted(false);
         }
@@ -902,6 +903,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * the day ( players chat )
      */
     private void day(){
+        System.out.println("! DAY !");
+        sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString , "! DAY !"));
         informAllWhoAreAlive();
         tellEveryOneItsChattingTime();
 
@@ -996,6 +999,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * players vote to kill somebody
      */
     private void voting(){
+        System.out.println("! VOTING !");
+        sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString , "! VOTING !"));
         Command votingResult;
         Command finalResult;
         informAllPlayersItsVotingTime();
@@ -1019,7 +1024,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         }
 
         if(votingBox.getTheLynchingPlayer() == null){
-            votingResult = new Command(CommandTypes.votingResult , " no body is lynched today");
+            votingResult = new Command(CommandTypes.votingResult , " no body is lynched today .");
 
             sendCommandToAliveAndSpectatorPlayers(votingResult);
 
@@ -1036,7 +1041,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             sendCommandToAliveAndSpectatorPlayers(votingResult);
 
             if(mayorSaysToLynchOrNot()){
-
+                System.out.println("the lynch happens .");
                 finalResult = new Command(CommandTypes.serverToClientString ,
                         "the player " +
                                 mostVotedPlayer.getUserName() +
@@ -1055,6 +1060,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
             }
 
             else {
+                System.out.println("the mayor canceled the lynch .");
                  finalResult = new Command(CommandTypes.serverToClientString , "the mayor canceled the lynch . ");
                  sendCommandToAliveAndSpectatorPlayers(finalResult);
             }
@@ -1427,7 +1433,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
                 else {
 
                     sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
-                            "ATTENTION : ! player " + player.getUserName() + " died tonight !"));
+                            "ATTENTION : ! player " + player.getUserName() + " died last night !"));
 
 //                    if(player.getRoleName() == RoleNames.professional && nightEvents.mustProfessionalDieForWrongShoot()){
 //                        try {
@@ -1784,6 +1790,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
      * @param mutedPlayer the player who gets muted for tomorrow
      */
     private void muteTheMutedOne(ServerSidePlayerDetails mutedPlayer){
+        sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
+                "ATTENTION : ! PLAYER : " + mutedPlayer.getUserName() + " IS MUTED TODAY !"));
         mutedPlayer.setMuted(true);
         Command muteCommand = new Command(CommandTypes.youAreMutedForTomorrow , null);
         try {
@@ -1804,6 +1812,8 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         if(professional != null){
             try {
                 professional.sendCommandToPlayer(dieCommand);
+                sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.serverToClientString ,
+                        "ATTENTION : ! player " + professional.getUserName() + " died last night !"));
             } catch (IOException e) {
 //                e.printStackTrace();
                 removeOfflinePlayerNotifyOthers(professional);
