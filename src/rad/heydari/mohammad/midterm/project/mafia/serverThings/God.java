@@ -76,7 +76,9 @@ public class God {
      */
     private static void initPlayersCount(){
         System.out.println("please Enter the number of the players : ");
-        playersCount = loopedTillRightInput.rangedIntInput(1 , 24);
+        playersCount = loopedTillRightInput.rangedIntInput(3 , 24);
+        System.out.println("building game for " + playersCount + " players .");
+        System.out.println("waiting for players to join ...");
     }
 
     public static void doTheCommand(Command command){
