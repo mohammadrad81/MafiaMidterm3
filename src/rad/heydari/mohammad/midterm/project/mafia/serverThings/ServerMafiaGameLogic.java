@@ -135,7 +135,7 @@ public class ServerMafiaGameLogic implements ServerSideGame {
         for(ServerSidePlayerDetails player : losersArrayList){
             endOfTheGame += player.getUserName() + " was : " + RoleNames.getRoleAsString(player.getRoleName()) + "\n";
         }
-
+        System.out.println(endOfTheGame);
         sendCommandToAliveAndSpectatorPlayers(new Command(CommandTypes.endOfTheGame , endOfTheGame));
 
     }
