@@ -8,6 +8,7 @@ import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableClientVote;
 import rad.heydari.mohammad.midterm.project.mafia.Runnables.clientSideRunnables.RunnableInputTaker;
 import rad.heydari.mohammad.midterm.project.mafia.chatThings.Message;
+import rad.heydari.mohammad.midterm.project.mafia.colors.ColorCodes;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.Command;
 import rad.heydari.mohammad.midterm.project.mafia.commandThings.CommandTypes;
 import rad.heydari.mohammad.midterm.project.mafia.gameThings.ClientSideGame;
@@ -175,8 +176,10 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             }
 
             else {
-                System.out.println("good morning , such a good day to chat\n"+
-                        "(if you enter \"ready\" you can only receive messages, no more sending ):");
+                System.out.println(ColorCodes.ANSI_BLUE +
+                        "good morning , such a good day to chat\n"+
+                        "(if you enter \"ready\" you can only receive messages, no more sending ):" +
+                        ColorCodes.ANSI_RESET);
 
                 executorService = Executors.newCachedThreadPool();
                 future = executorService.submit(new RunnableClientMessageSender(userName , objectOutputStream , inputProducer));
@@ -185,7 +188,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
 
         else {
-            System.out.println("good morning , the alive people are chatting : ");
+            System.out.println(ColorCodes.ANSI_BLUE +
+                    "good morning , the alive people are chatting :" +
+                    ColorCodes.ANSI_RESET);
 
 
         }
@@ -223,7 +228,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
         }
 
         if(isMuted){
-            System.out.println("you are not muted any more ");
+            System.out.println(ColorCodes.ANSI_GREEN + "you are not muted any more ." + ColorCodes.ANSI_RESET);
             isMuted = false;
         }
 
@@ -234,7 +239,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
      * @param command is the command contains the name of other players
      */
     public void vote(Command command){
-        System.out.println("! VOTING TIME !");
+//        System.out.println("! VOTING TIME !");
         ExecutorService executorService = null;
         Future<?> future = null;
         Command receivingCommand = null;
@@ -259,7 +264,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
             receivingCommand = receiveServerCommand();
 
             if(receivingCommand.getType() == CommandTypes.serverToClientString){
-                System.out.println(receivingCommand.getCommandNeededThings());
+                System.out.println(ColorCodes.ANSI_YELLOW +
+                        receivingCommand.getCommandNeededThings() +
+                        ColorCodes.ANSI_RESET);
 
             }
 
@@ -277,7 +284,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
                     }
 
                 }
-                System.out.println(receivingCommand.getCommandNeededThings());//printing voting result
+                System.out.println(ColorCodes.ANSI_RED + receivingCommand.getCommandNeededThings() + ColorCodes.ANSI_RESET);//printing voting result
             }
 
         }while (receivingCommand.getType() != CommandTypes.votingResult);
@@ -323,7 +330,7 @@ public class ClientMafiaGameLogic implements ClientSideGame {
      * prints the role of the player
      */
     public void printTheClientsRole(){
-        System.out.println("your role is : " + role.getRoleString());
+        System.out.println(ColorCodes.ANSI_YELLOW + "your role is : " + role.getRoleString() + ColorCodes.ANSI_RESET);
     }
 
     /**
@@ -455,7 +462,9 @@ public class ClientMafiaGameLogic implements ClientSideGame {
      * @param command is the command contains the string
      */
     public void printServerToClientString(Command command){
-        System.out.println(command.getCommandNeededThings());
+        System.out.println(ColorCodes.ANSI_YELLOW +
+                command.getCommandNeededThings() +
+                ColorCodes.ANSI_RESET);
     }
 
     /**
@@ -541,8 +550,13 @@ public class ClientMafiaGameLogic implements ClientSideGame {
      */
     private void die(Command command){
         isAlive = false;
-        System.out.println("you are dead");
-        System.out.println("reason : " + command.getCommandNeededThings());
+        System.out.println(ColorCodes.ANSI_RED +
+                "!YOU ARE DEAD!" +
+                ColorCodes.ANSI_RESET);
+        System.out.println(ColorCodes.ANSI_RED +
+                "reason : " +
+                command.getCommandNeededThings() +
+                ColorCodes.ANSI_RESET);
     }
 
     /**
